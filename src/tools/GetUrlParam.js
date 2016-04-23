@@ -1,4 +1,13 @@
-export function GetUrlParam() {
+import {Base64} from 'js-base64';
+var UrlParam=GetUrlParam();
+if (UrlParam.action) {
+  UrlParam.action = JSON.parse(decodeURIComponent(Base64.decode(UrlParam.action)));
+} else {
+  alert("您打开的地址有误！");
+  throw "cw";
+}
+
+export default function GetUrlParam() {
   var url = location.search; //获取url中"?"符后的字串
    var theRequest = {};
    if (url.indexOf("?") != -1) {
@@ -8,5 +17,9 @@ export function GetUrlParam() {
          theRequest[strs[i].split("=")[0]]=(strs[i].split("=")[1]);
       }
    }
-   return theRequest;
+   return theRequest
+}
+
+export function UrlParam(){
+  return UrlParam
 }

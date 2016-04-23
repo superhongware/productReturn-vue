@@ -4,7 +4,7 @@
           <div class="flexOne">{{store.storeName}}</div>
           <span class="fontOrange">
               <span class="mui-icon iconfont icon-ditu1 fontOrange"></span>
-          <span class="mainrange">{{store.address}}</span>
+          <span class="mainrange">{{getRange(store.range)}}</span>
           </span>
       </div>
       <p class="fontEll">{{store.address}}</p>
@@ -22,7 +22,14 @@ export default {
 
   data () {
     return {
-      user: {}
+      // user: {}
+    }
+  },
+  methods:{
+    getRange:range=>{
+      if(range){
+        return (storedata[i].range / 1000).toFixed(2) + 'km';
+      }
     }
   }
 }

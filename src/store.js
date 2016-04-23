@@ -2,7 +2,7 @@ import Firebase from 'firebase'
 import {hwGetJsonp} from './tools/HW_SuperApi'
 import { EventEmitter } from 'events'
 import { Promise } from 'es6-promise'
-import UrlParam from './tools/GetUrlParam'
+import {UrlParam} from './tools/GetUrlParam'
 
 const devapiurl='http://swapi.sandbox.hongware.com'
 const apiurl=devapiurl+'/openApi/dyncHongware/mobile/'
@@ -11,11 +11,10 @@ const itemsCache = Object.create(null)
 const store = new EventEmitter()
 const storiesPerPage = store.storiesPerPage = 30
 
-
-
-console.log(UrlParam)
+// console.log(UrlParam)
+var urlParam=UrlParam();
 const configjson = {
-  // orgCode:UrlParam.action.orgCode,
+  orgCode:urlParam.action.orgCode,
   store: 'h5',
   op: 'h5'
 };

@@ -3,7 +3,7 @@ import $ from 'jquery'
 import md5 from "md5";
 const base64 = Base64.encode;
 
-export function hwSuperApi(maindata){
+export default function hwSuperApi(maindata){
   if(maindata.method===undefined){
     throw "接口缺少method参数";
   }
@@ -22,7 +22,7 @@ export function hwGetJsonp(url,maindata){
   return $.ajax({
     url: url,
     method: 'GET',
-    data: hwSuperApi(data),
+    data: hwSuperApi(maindata),
     dataType: 'jsonp',
     jsonp: 'callBack'
   });
