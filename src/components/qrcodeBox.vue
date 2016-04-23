@@ -24,7 +24,6 @@ var urlParam=UrlParam()
 // console.log(urlParam)
 export default {
 
-  name: 'qrcodeBox',
   //
   // props:['qrcode'],
   //

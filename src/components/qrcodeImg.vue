@@ -8,7 +8,6 @@
 import QRcode from 'qrcode-js';
 
 export default {
-  name: 'qrcodeImg',
   props:['qrcode'],
   methods:{
     qrcode2img:qrcode=>{

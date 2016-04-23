@@ -15,9 +15,6 @@
 import store from '../store'
 
 export default {
-
-  name: 'storeItem',
-
   props:['store'],
 
   data () {
@@ -27,8 +24,10 @@ export default {
   },
   methods:{
     getRange:range=>{
-      if(range){
+      if(range>0){
         return (storedata[i].range / 1000).toFixed(2) + 'km';
+      }else {
+        return '未查到距离'
       }
     }
   }

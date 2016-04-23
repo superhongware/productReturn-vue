@@ -8,7 +8,7 @@ import ItemView from './components/ItemView.vue'
 import UserView from './components/UserView.vue'
 import returnPdView from './views/returnPdView.vue'
 
-
+Vue.config.debug = true
 // install router
 Vue.use(Router)
 

@@ -32,7 +32,6 @@
 import storeItem from './storeItem.vue'
 
 export default {
-  name: 'storesBox',
   props:['stores'],
 
   components: {
