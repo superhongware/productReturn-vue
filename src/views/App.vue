@@ -10,6 +10,9 @@
   </div>
 </template>
 
-<style lang="sass">
+<style lang='sass'>
+@import '~vux/vux.css';
+@import '../main.css';
+// @import "../variables.scss";
 
 </style>

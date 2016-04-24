@@ -20,7 +20,10 @@
         </div>
         <div class="detail-name">附近门店</div>
         <ul class="mui-table-view" id="storelist">
-          <store-item :store='store' v-for="store of stores"></store-item>
+          <!-- <p  v-for="store in stores" >
+            {{store.range | json}}
+          </p> -->
+          <store-item :store.sync='store'  v-for="store in stores" order-by='store.range'></store-item>
         </ul>
       </div>
     </div>

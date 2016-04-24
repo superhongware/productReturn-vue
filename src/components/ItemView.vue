@@ -69,7 +69,7 @@ export default {
 </script>
 
 <style lang="stylus">
-@import "../variables.styl"
+
 
 .item-view
   .item

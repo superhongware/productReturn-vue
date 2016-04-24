@@ -1,18 +1,18 @@
-import Firebase from 'firebase'
-import {hwGetJsonp} from './tools/HW_SuperApi'
+// import Firebase from 'firebase'
 import { EventEmitter } from 'events'
 import { Promise } from 'es6-promise'
+import {hwGetJsonp} from './tools/HW_SuperApi'
 import {UrlParam} from './tools/GetUrlParam'
 
 const devapiurl='http://swapi.sandbox.hongware.com'
 const apiurl=devapiurl+'/openApi/dyncHongware/mobile/'
-const api = new Firebase('https://hacker-news.firebaseio.com/v0')
+// const api = new Firebase('https://hacker-news.firebaseio.com/v0')
 const itemsCache = Object.create(null)
 const store = new EventEmitter()
 const storiesPerPage = store.storiesPerPage = 30
 
 // console.log(UrlParam)
-var urlParam=UrlParam();
+const urlParam=UrlParam();
 const configjson = {
   orgCode:urlParam.action.orgCode,
   store: 'h5',
@@ -24,93 +24,83 @@ let topStoryIds = []
 
 export default store
 
-/**
- * Subscribe to real time updates of the top 100 stories,
- * and cache the IDs locally.
- */
 
-api.child('topstories').on('value', snapshot => {
-  topStoryIds = snapshot.val()
-  store.emit('topstories-updated')
-})
+//传地址取经纬度
+function getAddressLngLat(address) {
+    return new Promise(function(resolve, reject) {
+        var myGeo = new BMap.Geocoder();
+        myGeo.getPoint(address, function(point) {
+            resolve(point);
+        });
+    });
+}
 
+
+//根据开始地点计算全部距离
+function setrange(start, callback) {
+    var endpoints = storedata.map(s => s.point);
+    var rangeP = endpoints.map(end => getDrivingRoute(start, end));
+    var num = 0;
+    rangeP.map((p, i) => {
+        p.then(data => {
+          var range="未查到距离";
+          if(data){
+            storedata[i].range = data.tr[0].cg;
+            range = (storedata[i].range / 1000).toFixed(2) + 'km';
+          }
+            $('.mainrange:eq(' + i + ')').html(range);
+        });
+    });
+}
+
+
+const orderInfoCache={}
+
+store.fetchUrlParma=()=>{
+  return Promise.resolve(urlParam);
+}
 
 //取门店信息
 store.fetchStors=()=>{
-  let data={
-    method: 'V5.mobile.allocate.warehouse.search',
-  }
-  return hwGetJsonp(apiurl+'warehouseSearch',Object.assign(data, configjson))
+  return new Promise(function(resolve, reject) {
+    let data={
+      method: 'V5.mobile.allocate.warehouse.search',
+    }
+
+    let storesP=hwGetJsonp(apiurl+'warehouseSearch',Object.assign(data, configjson))
+    .then(data=>{
+      console.log(data)
+      let storesData=data.stores
+      let addresses=storesData.map(store=>store.address)
+      let addressLngLatP = addresses.map(address => getAddressLngLat(address))
+      //设置地址经纬度
+      addressLngLatP.map((p, i) => {
+        p.then(point => {
+          storesData[i].point = point;
+          storesData[i].range = 0;
+        });
+      });
+      Promise.resolve(addressLngLatP)
+      .then(()=>{
+        resolve(storesData)
+      })
+    })
+  })
 }
 //取订单信息
-store.fetchOrder=orderNumber=>{
-  let data={
-    method: 'V5.mobile.order.info.get',
-    orderNumber: orderNumber,
-  }
-  return hwGetJsonp(apiurl+'orderInfoGet',Object.assign(data, configjson))
-}
-
-/**
- * Fetch an item data with given id.
- *
- * @param {Number} id
- * @return {Promise}
- */
-
-store.fetchItem = id => {
-  return new Promise((resolve, reject) => {
-    if (itemsCache[id]) {
-      resolve(itemsCache[id])
-    } else {
-      api.child('item/' + id).once('value', snapshot => {
-        const story = itemsCache[id] = snapshot.val()
-        resolve(story)
-      }, reject)
+store.fetchOrder=(orderNumber)=>{
+  return new Promise(function(resolve, reject) {
+    if(orderInfoCache[orderNumber]){
+      resolve(orderInfoCache[orderNumber])
+    }else{
+      let data={
+        method: 'V5.mobile.order.info.get',
+        orderNumber: orderNumber,
+      }
+      hwGetJsonp(apiurl+'orderInfoGet',Object.assign(data, configjson))
+      .then(data=>{
+        resolve(data)
+      })
     }
-  })
-}
-
-/**
- * Fetch the given list of items.
- *
- * @param {Array<Number>} ids
- * @return {Promise}
- */
-
-store.fetchItems = ids => {
-  if (!ids || !ids.length) {
-    return Promise.resolve([])
-  } else {
-    return Promise.all(ids.map(id => store.fetchItem(id)))
-  }
-}
-
-/**
- * Fetch items for the given page.
- *
- * @param {Number} page
- * @return {Promise}
- */
-
-store.fetchItemsByPage = page => {
-  const start = (page - 1) * storiesPerPage
-  const end = page * storiesPerPage
-  const ids = topStoryIds.slice(start, end)
-  return store.fetchItems(ids)
-}
-
-/**
- * Fetch a user data with given id.
- *
- * @param {Number} id
- * @return {Promise}
- */
-
-store.fetchUser = id => {
-  return new Promise((resolve, reject) => {
-    api.child('user/' + id).once('value', snapshot => {
-      resolve(snapshot.val())
-    }, reject)
-  })
+  });
 }

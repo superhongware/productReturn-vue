@@ -1,5 +1,5 @@
 <template>
-  <div class="mui-slider-item mui-control-content">
+  <div class="qrcodeimg">
     <img :src="qrcode2img(qrcode)" alt="" />
   </div>
 </template>
@@ -18,6 +18,11 @@ export default {
 }
 </script>
 
-<style lang="stylus">
-
+<style lang="sass">
+.qrcodeimg{
+  width:100%;
+  img{
+    width:100%;
+  }
+}
 </style>

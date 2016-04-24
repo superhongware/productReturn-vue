@@ -1,45 +1,44 @@
 <template>
-  <div class="mui-slider-item mui-control-content">
-    <div class="mui-scroll-wrapper">
-      <div class="mui-scroll">
-        <p class="listNo">订单编号：<span></span></p>
-        <div class="qrCon">
-          <div class="qrcode">
-            <qrcode-img :qrcode="qrcodestring"></qrcode-img>
-          </div>
-        </div>
-        <p class="listNo">此二维码用于门店快速找到您的订单</p>
-      </div>
+<div class="pagebox">
+    <p class="listNo">{{title}} : {{titleCode}}</p>
+    <div class="qrCon">
+        <qrcode-img :qrcode="qrcode"></qrcode-img>
     </div>
-
-  </div>
+    <p class="listNo">{{tips}}</p>
+</div>
 </template>
 
 <script>
 import store from '../store'
 import qrcodeImg from './qrcodeImg.vue'
-import {UrlParam} from '../tools/GetUrlParam'
 
-var urlParam=UrlParam()
 // console.log(urlParam)
 export default {
-
-  //
-  // props:['qrcode'],
-  //
-  data () {
-    return {
-      action: urlParam.action,
-      qrcodestring:urlParam.action.orderNumber+(urlParam.action.code?','+urlParam.action.code:'')
-    }
+  props:{
+    title:String,
+    titleCode:String,
+    tips:String,
+    qrcode:String
   },
-
   components: {
     qrcodeImg
   },
 }
 </script>
 
-<style lang="stylus">
-
+<style lang="sass">
+.pagebox{
+  width:100%;
+  .listNo{
+    width:100%;
+    text-align:center;
+    font-size:14px;
+    padding:20px 0;
+    color:#666;
+  }
+  .qrCon{
+    width:70%;
+    margin:0 auto;
+  }
+}
 </style>

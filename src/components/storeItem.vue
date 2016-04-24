@@ -4,7 +4,8 @@
           <div class="flexOne">{{store.storeName}}</div>
           <span class="fontOrange">
               <span class="mui-icon iconfont icon-ditu1 fontOrange"></span>
-          <span class="mainrange">{{getRange(store.range)}}</span>
+              <span class="mainrange" v-if="store.range>0">{{(store.range/1000).toFixed(2)}}km</span>
+              <span class="mainrange" v-if="!(store.range>0)">未查到距离</span>
           </span>
       </div>
       <p class="fontEll">{{store.address}}</p>
@@ -14,14 +15,9 @@
 <script>
 import store from '../store'
 
+
 export default {
   props:['store'],
-
-  data () {
-    return {
-      // user: {}
-    }
-  },
   methods:{
     getRange:range=>{
       if(range>0){

@@ -3,10 +3,13 @@ import Router from 'vue-router'
 import { domain, fromNow } from './filters'
 // import App from './components/App.vue'
 import App from './views/App.vue'
-import NewsView from './components/NewsView.vue'
-import ItemView from './components/ItemView.vue'
-import UserView from './components/UserView.vue'
+// import NewsView from './components/NewsView.vue'
+// import ItemView from './components/ItemView.vue'
+// import UserView from './components/UserView.vue'
 import returnPdView from './views/returnPdView.vue'
+import couponView from './views/couponView.vue'
+import {UrlParam} from './tools/GetUrlParam'
+let urlParam=UrlParam()
 
 Vue.config.debug = true
 // install router
@@ -31,15 +34,24 @@ router.map({
   // },
   '/returnProducts':{
     component:returnPdView
+  },
+  '/coupon':{
+    component:couponView
   }
 })
 
 router.beforeEach(function () {
   window.scrollTo(0, 0)
 })
+if(urlParam.action.type==9){
+  router.redirect({
+    '*': '/coupon'
+  })
+}else {
+  router.redirect({
+    '*': '/returnProducts'
+  })
+}
 
-router.redirect({
-  '*': '/returnProducts'
-})
 
 router.start(App, '#app')
