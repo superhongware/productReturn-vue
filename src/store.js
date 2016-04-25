@@ -66,7 +66,6 @@ store.fetchStors=()=>{
     let data={
       method: 'V5.mobile.allocate.warehouse.search',
     }
-
     let storesP=hwGetJsonp(apiurl+'warehouseSearch',Object.assign(data, configjson))
     .then(data=>{
       console.log(data)
@@ -89,6 +88,9 @@ store.fetchStors=()=>{
 }
 //取订单信息
 store.fetchOrder=(orderNumber)=>{
+  if(!orderNumber){
+    orderNumber=urlParam.action.orderNumber
+  }
   return new Promise(function(resolve, reject) {
     if(orderInfoCache[orderNumber]){
       resolve(orderInfoCache[orderNumber])

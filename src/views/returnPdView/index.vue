@@ -3,9 +3,10 @@
   <div v-if="urlParam.action">
 
   <tab active-color='#007aff'>
-    <tab-item v-if='urlParam.action.type!=2'>我的订单</tab-item>
-    <tab-item v-if='urlParam.action.type==2' :selected="showstore" @click="showstore=showstore?showstore:!showstore">附近门店</tab-item>
+    <tab-item v-if='urlParam.action.type!=2&&urlParam.action.type!=9'>我的订单</tab-item>
+    <tab-item v-if='urlParam.action.type==2||urlParam.action.type==9' :selected="showstore" @click="showstore=showstore?showstore:!showstore">附近门店</tab-item>
     <tab-item v-if='urlParam.action.type==2' :selected="!showstore" @click="showstore=showstore?!showstore:showstore">我的订单</tab-item>
+    <tab-item v-if='urlParam.action.type==9' :selected="!showstore" @click="showstore=showstore?!showstore:showstore">我的优惠券</tab-item>
   </tab>
 
       <div class="storePage"  v-show='showstore'>
@@ -32,8 +33,8 @@
         </div>
         <div class="pannelTitle">附近门店</div>
 
-        <!-- <Scroller lock-x  v-show='stores' > -->
-          <ul class="storeBox">
+        <scroller lock-x  v-show='stores' :style='{height:scrollerHeight1}'>
+          <ul class="storeBox" >
               <li class="store"  v-for="store in stores" order-by='store.range'>
                   <div class="flexBox">
                       <div class="storeName">{{store.storeName}}</div>
@@ -47,17 +48,24 @@
                   <p class="storeadress">{{store.address}}</p>
               </li>
           </ul>
+        </scroller>
       </div>
-        <!-- </Scroller> -->
 
 
     <Scroller lock-x height='scrollerHeight' :style='{height:scrollerHeight}' v-show='!showstore||urlParam.action.type!=2' >
       <!-- <stores-box v-show='showstore' :stores='stores'></stores-box> -->
       <qrcode-box
+      v-if="urlParam.action.type!=9"
       title="订单编号"
       :title-code="urlParam.action.orderNumber"
       :qrcode="urlParam.action.orderNumber+(urlParam.action.type==5?','+urlParam.action.code:'')"
       tips="此二维码用于门店快速找到您的订单"></qrcode-box>
+      <qrcode-box
+      v-if="urlParam.action.type==9"
+      title="优惠券编号"
+      :title-code="urlParam.action.code"
+      :qrcode="urlParam.action.code"
+      tips="此二维码用于门店快速验证您的优惠券"></qrcode-box>
     </Scroller>
   <!-- </div> -->
    <actionsheet :show.sync="show2" :menus="menus2" @menu-click="menuclick" cancel-text="取消" show-cancel></actionsheet>
@@ -67,15 +75,41 @@
 
 <script>
 // import storesBox from '../components/storesBox.vue'
-import store from '../store'
+import store from 'src/store'
 import Scroller from 'vux/components/scroller'
 import Tab from 'vux/components/tab'
 import TabItem from 'vux/components/tab-item'
 import Actionsheet from 'vux/components/actionsheet'
-import qrcodeBox from '../components/qrcodeBox.vue'
-import {UrlParam} from '../tools/GetUrlParam'
-import {getNowLngLat,getDrivingRoute,getAddressLngLat} from '../tools/HW_BmapApi'
-let urlParam=UrlParam()
+import qrcodeBox from 'src/components/qrcodeBox.vue'
+import {getNowLngLat,getDrivingRoute,getAddressLngLat} from 'src/tools/HW_BmapApi'
+
+function getTitleName(urlParam) {
+  let title=''
+  switch (urlParam.action.type) {
+    case '1':
+    title='自提信息'
+    break;
+    case '2':
+    title='退换货信息'
+    break;
+    case '5':
+    title='提货信息'
+    break;
+    case '6':
+    title='自提信息'
+    break;
+    case '9':
+    title='优惠信息'
+    break;
+    default:
+    title='商铺旺'
+  }
+  return title;
+}
+
+// eyJvcmRlck51bWJlciI6IkUyMDE2MDQyMjEwMjQ0ODA5ODkxODQxNSIsIm9yZ0NvZGUiOiJ3b3JrIiwidHlwZSI6IjkiLCJjb2RlIjoiYXNkYWRkYSJ9
+// eyJvcmRlck51bWJlciI6IkUyMDE2MDQyMjEwMjQ0ODA5ODkxODQxNSIsIm9yZ0NvZGUiOiJ3b3JrIiwidHlwZSI6IjIiLCJjb2RlIjoiYXNkYWRkYSJ9
+// eyJvcmRlck51bWJlciI6IkUyMDE2MDQyMjEwMjQ0ODA5ODkxODQxNSIsIm9yZ0NvZGUiOiJ3b3JrIiwidHlwZSI6IjUiLCJjb2RlIjoiYXNkYWRkYSJ9
 
 export default {
   components: {
@@ -94,9 +128,10 @@ export default {
       orderaddress:'',
       urlParam:{},
       ranges:[],
-      showstore:urlParam.action.type==2?true:false,
-      scrollerHeight:window.innerHeight-44+'px',
+      showstore:true,
       addressshow:false,
+      scrollerHeight1:window.innerHeight-164+'px',
+      scrollerHeight:window.innerHeight-44+'px',
       show2: false,
       nowaddress:'',
       orderLngLat:{},
@@ -110,40 +145,22 @@ export default {
   route: {
     data ({ to }) {
       let sref=this
-      let title=''
-      switch (urlParam.action.type) {
-        case '1':
-        title='自提信息'
-        break;
-        case '2':
-        title='退换货信息'
-        break;
-        case '5':
-        title='提货信息'
-        break;
-        case '6':
-        title='自提信息'
-        break;
-        case '9':
-        title='优惠信息'
-        break;
-        default:
-        title='商铺旺'
-      }
-      document.title = title
 
       return Promise.all([
         store.fetchStors(),
-        store.fetchOrder(urlParam.action.orderNumber),
+        store.fetchOrder(),
         store.fetchUrlParma(),
       ]).then((data)=>{
         // sref.$log()
         // sref.$broadcast( 'dataload',data)
         sref.$emit('dataload',data)
+
+        document.title = getTitleName(data[2])
         return {
           stores:data[0],
           orderaddress:data[1].order.logisticInfo.address,
-          urlParam:data[2]
+          urlParam:data[2],
+          showstore:(data[2].action.type==2||data[2].action.type==9)?true:false
         }
       })
     }
@@ -222,100 +239,5 @@ export default {
 </script>
 
 <style lang="sass">
-@import '../variables.scss';
-body{
-  background-color:#efeff4;
-}
-*{
-  box-sizing: border-box;
-}
-.storePage{
-  .pannelTitle{
-    width:100%;
-    padding:8px 10px;
-    font-size:14px;
-    color:#666;
-  }
-  .flexBox{
-    width:100%;
-    display:flex;
-  }
-  .addressinfo{
-    background-color:#fff;
-    height:44px;
-    line-height:44px;
-    padding:0px 5px;
-    .startaddress{
-      font-size:12px;
-      color:#666;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      flex:1;
-      white-space: nowrap;
-      display: block;
-    }
-    .orderlocationbar{
-      font-size:12px;
-      color:#666;
-      .rightjiantou{
-        color:#666;
-        font-size:8px;
-        display:inline-block;
-        // position:absolute;
-        // right:0px;
-      }
-    }
-  }
-
-  .storeBox{
-    width:100%;
-    .store{
-      list-style:none;
-      background-color:#fff;
-      border-bottom:1px solid #ddd;
-      width:100%;
-      height:70px;
-      padding:10px;
-    }
-    .rangetext{
-      text-align:right;
-      flex: 1;
-      font-size:14px;
-      line-height:25px;
-      .iconfont{
-        position:relative;
-        top:-2px;
-        right:-4px;
-        font-size:16px;
-      }
-    }
-    .storeadress{
-      font-size:12px;
-      color:#666;
-      line-height:25px;
-    }
-  }
-
-}
-.actionsheetbtn{
-  font-size:14px;
-}
-
-.maincolor{
-  color:$mainColor;
-}
-.orangecolor{
-  color:$orangeColor;
-}
-// @import '~vux/vux.css';
-// .mui-scroll-wrapper{
-//   height:600px;
-//   .mui-scroll{
-//     height:600px;
-//   }
-// }
-// .mui-control-content{
-//   display:block;
-// }
-
+@import './returnPdView.scss'
 </style>

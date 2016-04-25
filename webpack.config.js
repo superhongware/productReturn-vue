@@ -1,3 +1,4 @@
+var path = require('path')
 var webpack = require('webpack')
 
 module.exports = {
@@ -6,6 +7,12 @@ module.exports = {
     path: './static',
     publicPath: '/static/',
     filename: 'build.js'
+  },
+  resolve: {
+    extensions: ['', '.js', '.vue'],
+    alias: {
+      'src': path.resolve(__dirname, './src')
+    }
   },
   module: {
     // avoid webpack trying to shim process
