@@ -42,6 +42,7 @@
     "md5": "^2.1.0",
     "qrcode-js": "0.0.2",
     "vue": "^1.0.8",
+    "vue-animated-list": "^1.0.2",
     "vue-router": "^0.7.5",
     "vux": "0.0.103"
   }

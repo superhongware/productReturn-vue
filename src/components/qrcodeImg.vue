@@ -11,14 +11,13 @@ export default {
   props:['qrcode'],
   methods:{
     qrcode2img:qrcode=>{
-      console.log(qrcode)
       return QRcode.toDataURL(qrcode,4)
     }
   }
 }
 </script>
 
-<style lang="sass">
+<style lang="sass" scoped>
 .qrcodeimg{
   width:100%;
   img{
