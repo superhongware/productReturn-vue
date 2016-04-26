@@ -68,6 +68,7 @@ import Actionsheet from 'vux/components/actionsheet'
 import qrcodeBox from 'src/components/qrcodeBox.vue'
 import Loading from 'vux/components/loading'
 import storesBox from './storesBox.vue'
+import {Base64} from 'js-base64'
 
 import {
     getNowLngLat,
@@ -113,7 +114,7 @@ export default {
 
     route: {
         data({to:{query:{action}}}) {
-          console.log(action)
+            console.log(JSON.parse(decodeURIComponent(Base64.decode(action))))
             let self = this
             return Promise.all([
                 // store.fetchStors2(),
@@ -122,10 +123,6 @@ export default {
             ]).then((data) => {
                 let [ orderdata, urlParam] = data
                 document.title = getTitleName(urlParam)
-
-                setTimeout(() => {
-                    self.$emit('dataload', data)
-                })
                 return {
                     // stores: stores,
                     orderaddress: orderdata.order.logisticInfo.address,
