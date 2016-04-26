@@ -9,10 +9,22 @@
     </router-view>
   </div>
 </template>
+<script>
 
+
+</script>
 <style lang='sass'>
-@import '~vux/vux.css';
-@import '../main.css';
-// @import "../variables.scss";
+@import url(//at.alicdn.com/t/font_1461495364_9250605.css);
+@import "~vux/vux.css";
+@import "~vue-animate/dist/vue-animate.min.css";
+@import "../variables.scss";
+
+body{
+  background-color:$bg;
+}
+*{
+  box-sizing: border-box;
+}
+
 
 </style>

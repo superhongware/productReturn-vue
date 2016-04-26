@@ -16,36 +16,40 @@
             <tab-item v-if='urlParam.action.type==9' :selected="!showstore" @click="showstore=showstore?!showstore:showstore">我的优惠券</tab-item>
         </tab>
 
-        <div class="storePage" v-show="showstore">
+        <div class="fadepage" v-show="showstore" transition="slideLeft">
+
             <div class="pannelTitle">我的位置</div>
             <div class="flexBox addressinfo">
                 <div>
-                    <p class="orderlocationbar" @click="show2=true" v-show="addressshow">
+                    <p class="orderlocationbar" @click="show2=true" v-show="showMyLocation">
                         <span class="iconfont maincolor icon-dizhi orangecolor"></span>当前位置
                         <span class="iconfont rightjiantou icon-fanhui4"></span>
                     </p>
-                    <p class="orderlocationbar" @click="show2=true" v-show='!addressshow'>
+                    <p class="orderlocationbar" @click="show2=true" v-show='!showMyLocation'>
                         <span class="iconfont maincolor icon-kuaididaishou"></span> 订单收货地址
                         <span class="iconfont rightjiantou icon-fanhui4"></span>
                     </p>
                 </div>
-                <div class="startaddress" v-show='addressshow'>
+                <div class="startaddress" v-show='showMyLocation'>
                     {{nowaddress}}
                 </div>
-                <div class="startaddress" v-show='!addressshow'>
+                <div class="startaddress" v-show='!showMyLocation'>
                     {{orderaddress}}
                 </div>
             </div>
             <div class="pannelTitle">附近门店</div>
-            <scroller lock-x v-show='stores' :style='{height:scrollerHeight1}'>
-                <stores-box :stores="stores"></stores-box>
+            <scroller lock-x v-show='stores' :style='{height:scrollerHeight1}' v-ref:scroller>
+                <stores-box :stores="stores"></stores-box v-ref:storesBox>
             </scroller>
         </div>
 
-        <Scroller lock-x height='scrollerHeight' :style='{height:scrollerHeight}' v-show='!showstore||urlParam.action.type!=2'>
+
+        <div class="fadepage" v-show='!showstore||urlParam.action.type!=2' transition="slideRight">
+          <Scroller lock-x height='scrollerHeight' :style='{height:scrollerHeight}' >
             <qrcode-box v-if="urlParam.action.type!=9" title="订单编号" :title-code="urlParam.action.orderNumber" :qrcode="urlParam.action.orderNumber+(urlParam.action.type==5?','+urlParam.action.code:'')" tips="此二维码用于门店快速找到您的订单"></qrcode-box>
             <qrcode-box v-if="urlParam.action.type==9" title="优惠券编号" :title-code="urlParam.action.code" :qrcode="urlParam.action.code" tips="此二维码用于门店快速验证您的优惠券"></qrcode-box>
-        </Scroller>
+          </Scroller>
+        </div>
 
     </div>
     <actionsheet :show.sync="show2" :menus="menus2" @menu-click="menuclick" cancel-text="取消" show-cancel></actionsheet>
@@ -62,8 +66,8 @@ import Tab from 'vux/components/tab'
 import TabItem from 'vux/components/tab-item'
 import Actionsheet from 'vux/components/actionsheet'
 import qrcodeBox from 'src/components/qrcodeBox.vue'
-import storesBox from 'src/components/storesBox.vue'
 import Loading from 'vux/components/loading'
+import storesBox from './storesBox.vue'
 
 import {
     getNowLngLat,
@@ -94,7 +98,7 @@ export default {
               text:'加载中...'
             },
             showstore: true,
-            addressshow: false,
+            showMyLocation: false,
             scrollerHeight1: window.innerHeight - 164 + 'px',
             scrollerHeight: window.innerHeight - 44 + 'px',
             show2: false,
@@ -112,18 +116,18 @@ export default {
           console.log(action)
             let self = this
             return Promise.all([
-                store.fetchStors2(),
+                // store.fetchStors2(),
                 store.fetchOrder(),
                 store.fetchUrlParma(),
             ]).then((data) => {
-                let [stores, orderdata, urlParam] = data
+                let [ orderdata, urlParam] = data
                 document.title = getTitleName(urlParam)
 
                 setTimeout(() => {
                     self.$emit('dataload', data)
                 })
                 return {
-                    stores: stores,
+                    // stores: stores,
                     orderaddress: orderdata.order.logisticInfo.address,
                     urlParam: urlParam,
                     loading:{
@@ -135,39 +139,37 @@ export default {
             })
         }
     },
-    created: function() {
-        this.$on('dataload', (data) => {
-            let self = this,
-                orderLngLat,
-                orderLngLatP,
-                storesLngLatP,
-                rangeP = []
-                //取门店地址经纬度
-            let addresses = self.stores.map(store => store.address)
-                // console.log(['%%',this.stores])
-            storesLngLatP = addresses.map(address => getAddressLngLat(address))
-                //将经纬度设置到stores上
-            storesLngLatP.map((p, i) => {
-                    p.then(point => self.stores[i].point = point)
-                })
-                //取订单地址经纬度
-            orderLngLatP = getAddressLngLat(self.orderaddress)
+    ready: function() {
+      let self=this
 
-            //取到门店地址经纬度  订单地址经纬度后  算订单地址到门店距离
-            Promise.all(storesLngLatP.concat(orderLngLatP))
-                .then(data => {
-                    //订单地址经纬度
-                    self.orderLngLat = data.pop()
-                        //门店地址经纬度
-                    let storeLLs = data
-                        //更新门店经纬度
-                    storeLLs.map((storeLL, i) => {
-                            self.$set('stores[' + i + '].point', storeLL)
-                        })
-                        //更新门店距离
-                    self.setRange(self.orderLngLat)
-                })
-        })
+      //取store信息
+      store.fetchStors()
+      .then(stores=>{
+        stores.map(store=>store.range=9999999);
+        //存门店信息
+        self.stores=stores
+          //更新scroller
+          setTimeout(()=>{
+            self.$nextTick(()=>{
+              self.$refs.scroller.reset()
+            })
+          },stores.length*100)
+        //取门店地址经纬度
+        return Promise.all(self.stores.map(store => getAddressLngLat(store.address)))
+      })
+      .then(storeLLs=>{
+        // 存门店经纬度
+        storeLLs.map((storeLL,i)=>self.stores[i].point=storeLL)
+        // 取订单地址经纬度
+        return getAddressLngLat(self.orderaddress)
+      })
+      .then(orderLL=>{
+        // 存订单地址经纬度
+        self.orderLngLat=orderLL
+        // 计算订单地址与门店距离
+        self.setRange(self.orderLngLat)
+      })
+
     },
     methods: {
       // remove(){
@@ -177,8 +179,7 @@ export default {
         menuclick(a) {
             let self = this
             if (a === 'menu1') {
-
-                self.addressshow = true
+                self.showMyLocation = true
                 self.loading.show = true
                 self.loading.text = '正在获取地址..'
                 getNowLngLat()
@@ -190,7 +191,7 @@ export default {
                         self.setRange(r.point)
                     })
             } else if (a === 'menu2') {
-                self.addressshow = false
+                self.showMyLocation = false
                 self.setRange(self.orderLngLat)
             }
         },
@@ -201,12 +202,13 @@ export default {
             //计算start与每个门店的距离
             let rangePs = storeLLs.map(storeLL => getDrivingRoute(start, storeLL))
             //更新stores
-            rangePs.map((rangeP, i) => {
-                rangeP.then(rangedata => {
-                    console.log(rangedata.tr[0].cg)
-                    self.$set('stores[' + i + '].range', rangedata.tr[0].cg)
+            Promise.all(rangePs)
+            .then(ranges => {
+                ranges.map((range,i)=>{
+                  setTimeout(()=>{self.$set('stores[' + i + '].range', range.tr[0].cg)},200*i)
                 })
             })
+
         }
     },
 }

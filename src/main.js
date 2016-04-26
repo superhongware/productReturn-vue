@@ -4,7 +4,8 @@ import { domain, fromNow } from './filters'
 import App from './views/App.vue'
 import VueAnimatedList from 'vue-animated-list'
 import returnPdView from './views/returnPdView'
-import test from './views/try/scroller.vue'
+// import returnPdView0 from './views/returnPdView0'
+import tryscroller from './views/try/scroller.vue'
 
 
 // import App from './components/App.vue'
@@ -43,8 +44,11 @@ router.map({
   '/returnProducts':{
     component:returnPdView
   },
-  '/test':{
-    component:test
+  // '/test':{
+  //   component:returnPdView0
+  // },
+  '/try':{
+    component:tryscroller
   }
   // '/coupon':{
   //   component:couponView
