@@ -1,0 +1,59 @@
+@import 'src/variables.scss';
+
+body{
+  background-color:#efeff4;
+}
+*{
+  box-sizing: border-box;
+}
+.storePage{
+  .pannelTitle{
+    width:100%;
+    padding:8px 10px;
+    font-size:14px;
+    color:#666;
+  }
+  .flexBox{
+    width:100%;
+    display:flex;
+  }
+  .addressinfo{
+    background-color:#fff;
+    height:44px;
+    line-height:44px;
+    padding:0px 5px;
+    .startaddress{
+      font-size:12px;
+      color:#666;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      flex:1;
+      white-space: nowrap;
+      display: block;
+    }
+    .orderlocationbar{
+      font-size:12px;
+      color:#666;
+      .rightjiantou{
+        color:#666;
+        font-size:8px;
+        display:inline-block;
+        // position:absolute;
+        // right:0px;
+      }
+    }
+  }
+
+
+}
+
+.actionsheetbtn{
+  font-size:14px;
+}
+
+.maincolor{
+  color:$mainColor;
+}
+.orangecolor{
+  color:$orangeColor;
+}

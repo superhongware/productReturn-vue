@@ -4,8 +4,7 @@
         <div class="storeName">{{store.storeName}}</div>
         <span class="rangetext orangecolor">
             <span class="mui-icon iconfont icon-dizhi orangecolor"></span>
-            <span class="mainrange" v-if="store.range>0" >{{(store.range/1000).toFixed(2)}}km</span>
-            <span class="mainrange" v-if="!(store.range>0)" >未获取距离</span>
+            <span class="mainrange" v-if="store.range>0">{{(store.range/1000).toFixed(2)}}km</span>
         </span>
     </div>
     <p class="storeadress">{{store.address}}</p>
@@ -48,5 +47,4 @@ export default {
   color:#666;
   line-height:25px;
 }
-
 </style>

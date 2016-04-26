@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "description": "HN clone with Vue.js using HN API",
   "scripts": {
-    "dev": "webpack-dev-server --inline --hot --no-info",
+    "dev": "webpack-dev-server --inline --hot --no-info --port 8080",
+    "zlkdev": "webpack-dev-server --inline --hot --no-info --port 8080 --host 192.168.50.149",
     "build": "cross-env NODE_ENV=production webpack --progress --hide-modules"
   },
   "repository": {
@@ -44,6 +45,6 @@
     "vue": "^1.0.8",
     "vue-animated-list": "^1.0.2",
     "vue-router": "^0.7.5",
-    "vux": "0.0.103"
+    "vux": "0.0.111"
   }
 }
