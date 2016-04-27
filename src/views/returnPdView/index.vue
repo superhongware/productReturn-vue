@@ -145,12 +145,12 @@ export default {
         stores.map(store=>store.range=9999999);
         //存门店信息
         self.stores=stores
-          //更新scroller
-          setTimeout(()=>{
-            self.$nextTick(()=>{
-              self.$refs.scroller.reset()
-            })
-          },stores.length*100)
+        //更新scroller
+        setTimeout(()=>{
+          self.$nextTick(()=>{
+            self.$refs.scroller.reset()
+          })
+        },stores.length*100)
         //取门店地址经纬度
         return Promise.all(self.stores.map(store => getAddressLngLat(store.address)))
       })
