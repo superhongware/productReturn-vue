@@ -10,8 +10,12 @@
     <div v-if="urlParam.action">
 
         <tab active-color='#007aff'>
+            <!-- type不为2跟9的时候  只显示二维码 -->
             <tab-item v-if='urlParam.action.type!=2&&urlParam.action.type!=9'>我的订单</tab-item>
+
+            <!-- type为2跟9的时候  显示附近门店 -->
             <tab-item v-if='urlParam.action.type==2||urlParam.action.type==9' :selected="showstore" @click="showstore=showstore?showstore:!showstore">附近门店</tab-item>
+            <!-- type为2 二维码按钮的字显示“我的订单”，9 则显示”我的优惠券”  -->
             <tab-item v-if='urlParam.action.type==2' :selected="!showstore" @click="showstore=showstore?!showstore:showstore">我的订单</tab-item>
             <tab-item v-if='urlParam.action.type==9' :selected="!showstore" @click="showstore=showstore?!showstore:showstore">我的优惠券</tab-item>
         </tab>
@@ -44,8 +48,9 @@
         </div>
 
 
-        <div class="fadepage" v-show='!showstore||urlParam.action.type!=2' transition="slideRight">
+        <div class="fadepage" v-show='!showstore' transition="slideRight">
           <Scroller lock-x height='scrollerHeight' :style='{height:scrollerHeight}' >
+            <!-- type不同  提示文字不同，二维码内容不同  9是优惠券信息，其余是订单信息,   注：type为5  二维码为 订单号,code  -->
             <qrcode-box v-if="urlParam.action.type!=9" title="订单编号" :title-code="urlParam.action.orderNumber" :qrcode="urlParam.action.orderNumber+(urlParam.action.type==5?','+urlParam.action.code:'')" tips="此二维码用于门店快速找到您的订单"></qrcode-box>
             <qrcode-box v-if="urlParam.action.type==9" title="优惠券编号" :title-code="urlParam.action.code" :qrcode="urlParam.action.code" tips="此二维码用于门店快速验证您的优惠券"></qrcode-box>
           </Scroller>
@@ -68,13 +73,25 @@ import Actionsheet from 'vux/components/actionsheet'
 import qrcodeBox from 'src/components/qrcodeBox.vue'
 import Loading from 'vux/components/loading'
 import storesBox from './storesBox.vue'
-import {Base64} from 'js-base64'
+// import {Base64} from 'js-base64'
 
 import {
     getNowLngLat,
     getDrivingRoute,
     getAddressLngLat
 } from 'src/tools/HW_BmapApi'
+
+// console.log(Base64.encode(JSON.stringify({orderNumber: "E20160422102448098918415", orgCode: "work", type: "9", code: "asdadda"})));
+// console.log(Base64.encode(JSON.stringify({orderNumber: "E20160422102448098918415", orgCode: "work", type: "2", code: "asdadda"})));
+// console.log(Base64.encode(JSON.stringify({orderNumber: "E20160422102448098918415", orgCode: "work", type: "6", code: "asdadda"})));
+// console.log(Base64.encode(JSON.stringify({orderNumber: "E20160422102448098918415", orgCode: "work", type: "5", code: "asdadda"})));
+// eyJvcmRlck51bWJlciI6IkUyMDE2MDQyMjEwMjQ0ODA5ODkxODQxNSIsIm9yZ0NvZGUiOiJ3b3JrIiwidHlwZSI6IjkiLCJjb2RlIjoiYXNkYWRkYSJ9
+// eyJvcmRlck51bWJlciI6IkUyMDE2MDQyMjEwMjQ0ODA5ODkxODQxNSIsIm9yZ0NvZGUiOiJ3b3JrIiwidHlwZSI6IjIiLCJjb2RlIjoiYXNkYWRkYSJ9
+// eyJvcmRlck51bWJlciI6IkUyMDE2MDQyMjEwMjQ0ODA5ODkxODQxNSIsIm9yZ0NvZGUiOiJ3b3JrIiwidHlwZSI6IjYiLCJjb2RlIjoiYXNkYWRkYSJ9
+// eyJvcmRlck51bWJlciI6IkUyMDE2MDQyMjEwMjQ0ODA5ODkxODQxNSIsIm9yZ0NvZGUiOiJ3b3JrIiwidHlwZSI6IjUiLCJjb2RlIjoiYXNkYWRkYSJ9
+
+
+//type 1,修改自提门店短信;2,退换货提醒;3,退货成功;4,换货成功;5,发货码,6,自提码  9,优惠券
 
 export default {
     components: {
@@ -114,7 +131,7 @@ export default {
 
     route: {
         data({to:{query:{action}}}) {
-            console.log(JSON.parse(decodeURIComponent(Base64.decode(action))))
+            // console.log(JSON.parse(decodeURIComponent(Base64.decode(action))))
             let self = this
             return Promise.all([
                 // store.fetchStors2(),
@@ -131,14 +148,14 @@ export default {
                       show:false,
                       text:'加载中...'
                     },
-                    showstore: (urlParam.action.type == 2 || urlParam.action.type == 9) ? true : false
+                    showstore: (urlParam.action.type == 2) ? true : false
                 }
             })
         }
     },
     ready: function() {
       let self=this
-
+      this.$log();
       //取store信息
       store.fetchStors()
       .then(stores=>{
