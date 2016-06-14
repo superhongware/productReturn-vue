@@ -9,6 +9,7 @@ export function getNowLngLat(){
             } else {
                 reject(this.getStatus());
             }
+            geolocation=null;
         }, {
             enableHighAccuracy: true
         });
@@ -30,6 +31,10 @@ export function getDrivingRoute(p1, p2) {
 
         function onSearchComplete(data) {
             resolve(data);
+            map = null;
+            start = null;
+            end = null;
+            driving = null;
         }
         driving.search(start, end);
     });
@@ -40,6 +45,7 @@ export function getAddressLngLat(address) {
         var myGeo = new BMap.Geocoder();
         myGeo.getPoint(address, function(point) {
             resolve(point);
+            myGeo = null;
         });
     });
 }

@@ -1,33 +1,32 @@
 <style lang="sass">
 
-@import './returnPdView.scss'
+@import '../returnPdView/returnPdView.scss'
 
+// <tab active-color='#007aff'>
+// <!-- type不为2跟9的时候  只显示二维码 -->
+// <tab-item v-if='urlParam.action.type!=2&&urlParam.action.type!=9'>我的订单</tab-item>
+//
+// <!-- type为2跟9的时候  显示附近门店 -->
+// <tab-item v-if='urlParam.action.type==2||urlParam.action.type==9' :selected="showstore" @click="showstore=showstore?showstore:!showstore">附近门店</tab-item>
+// <!-- type为2 二维码按钮的字显示“我的订单”，9 则显示”我的优惠券”  -->
+// <tab-item v-if='urlParam.action.type==2' :selected="!showstore" @click="showstore=showstore?!showstore:showstore">我的订单</tab-item>
+// <tab-item v-if='urlParam.action.type==9' :selected="!showstore" @click="showstore=showstore?!showstore:showstore">我的优惠券</tab-item>
+// </tab>
 </style>
 
 <template>
 
 <div>
-    <div v-if="urlParam.action">
-
-        <tab active-color='#007aff'>
-            <!-- type不为2跟9的时候  只显示二维码 -->
-            <tab-item v-if='urlParam.action.type!=2&&urlParam.action.type!=9'>我的订单</tab-item>
-
-            <!-- type为2跟9的时候  显示附近门店 -->
-            <tab-item v-if='urlParam.action.type==2||urlParam.action.type==9' :selected="showstore" @click="showstore=showstore?showstore:!showstore">附近门店</tab-item>
-            <!-- type为2 二维码按钮的字显示“我的订单”，9 则显示”我的优惠券”  -->
-            <tab-item v-if='urlParam.action.type==2' :selected="!showstore" @click="showstore=showstore?!showstore:showstore">我的订单</tab-item>
-            <tab-item v-if='urlParam.action.type==9' :selected="!showstore" @click="showstore=showstore?!showstore:showstore">我的优惠券</tab-item>
-        </tab>
-
+    <!-- <div v-if="urlParam.action"> -->
+    <div>
         <div class="fadepage" v-show="showstore" transition="slideLeft">
 
             <div class="pannelTitle">我的位置</div>
             <div class="flexBox addressinfo">
                 <div>
-                    <p class="orderlocationbar" @click="show2=true" v-show="showMyLocation">
-                        <span class="iconfont maincolor icon-dizhi orangecolor"></span>当前位置
-                        <span class="iconfont rightjiantou icon-fanhui4"></span>
+                    <p class="orderlocationbar"  v-show="showMyLocation">
+                        <span class="iconfont maincolor icon-dizhi orangecolor"></span>当前位置&nbsp;&nbsp;&nbsp;&nbsp;
+                        <!-- <span class="iconfont rightjiantou icon-fanhui4"></span> -->
                     </p>
                     <p class="orderlocationbar" @click="show2=true" v-show='!showMyLocation'>
                         <span class="iconfont maincolor icon-kuaididaishou"></span> 订单收货地址
@@ -48,31 +47,31 @@
         </div>
 
 
-        <div class="fadepage" v-show='!showstore' transition="slideRight">
-          <Scroller lock-x height='scrollerHeight' :style='{height:scrollerHeight}' >
-            <!-- type不同  提示文字不同，二维码内容不同  9是优惠券信息，其余是订单信息,   注：type为5  二维码为 订单号,code  -->
-            <qrcode-box v-if="urlParam.action.type!=9" title="订单编号" :title-code="urlParam.action.orderNumber" :qrcode="urlParam.action.orderNumber+(urlParam.action.type==5?','+urlParam.action.code:'')" tips="此二维码用于门店快速找到您的订单"></qrcode-box>
-            <qrcode-box v-if="urlParam.action.type==9" title="优惠券编号" :title-code="urlParam.action.code" :qrcode="urlParam.action.code" tips="此二维码用于门店快速验证您的优惠券"></qrcode-box>
-          </Scroller>
-        </div>
 
     </div>
-    <actionsheet :show.sync="show2" :menus="menus2" @menu-click="menuclick" cancel-text="取消" show-cancel></actionsheet>
     <loading :show="loading.show" :text="loading.text"></loading>
 </div>
 
 </template>
 
 <script>
+// <actionsheet :show.sync="show2" :menus="menus2" @menu-click="menuclick" cancel-text="取消" show-cancel></actionsheet>
+// <div class="fadepage" v-show='!showstore' transition="slideRight">
+// <Scroller lock-x height='scrollerHeight' :style='{height:scrollerHeight}' >
+// <!-- type不同  提示文字不同，二维码内容不同  9是优惠券信息，其余是订单信息,   注：type为5  二维码为 订单号,code  -->
+// <qrcode-box v-if="urlParam.action.type!=9" title="订单编号" :title-code="urlParam.action.orderNumber" :qrcode="urlParam.action.orderNumber+(urlParam.action.type==5?','+urlParam.action.code:'')" tips="此二维码用于门店快速找到您的订单"></qrcode-box>
+// <qrcode-box v-if="urlParam.action.type==9" title="优惠券编号" :title-code="urlParam.action.code" :qrcode="urlParam.action.code" tips="此二维码用于门店快速验证您的优惠券"></qrcode-box>
+// </Scroller>
+// </div>
 import { Promise } from 'es6-promise'
-import store from 'src/store'
+// import store from 'src/store'
 import Scroller from 'vux/components/scroller'
-import Tab from 'vux/components/tab'
-import TabItem from 'vux/components/tab-item'
-import Actionsheet from 'vux/components/actionsheet'
-import qrcodeBox from 'src/components/qrcodeBox.vue'
+// import Tab from 'vux/components/tab'
+// import TabItem from 'vux/components/tab-item'
+// import Actionsheet from 'vux/components/actionsheet'
+// import qrcodeBox from 'src/components/qrcodeBox.vue'
 import Loading from 'vux/components/loading'
-import storesBox from './storesBox.vue'
+import storesBox from '../returnPdView/storesBox.vue'
 // import {Base64} from 'js-base64'
 
 import {
@@ -95,13 +94,13 @@ import {
 
 export default {
     components: {
-        TabItem,
-        Tab,
+        // TabItem,
+        // Tab,
         Loading,
         Scroller,
         storesBox,
-        qrcodeBox,
-        Actionsheet,
+        // qrcodeBox,
+        // Actionsheet,
     },
 
     data() {
@@ -117,7 +116,7 @@ export default {
             },
             showstore: true,
             showMyLocation: false,
-            scrollerHeight1: window.innerHeight - 164 + 'px',
+            scrollerHeight1: window.innerHeight - 120 + 'px',
             scrollerHeight: window.innerHeight - 44 + 'px',
             show2: false,
             nowaddress: '',
@@ -133,22 +132,22 @@ export default {
         data({to:{query:{action}}}) {
             // console.log(JSON.parse(decodeURIComponent(Base64.decode(action))))
             let self = this
-            return Promise.all([
+            return Promise.resolve([
                 // store.fetchStors2(),
-                store.fetchOrder(),
-                store.fetchUrlParma(),
+                // store.fetchOrder(),
+                // store.fetchUrlParma(),
             ]).then((data) => {
                 let [ orderdata, urlParam] = data
-                document.title = getTitleName(urlParam)
+                document.title = '附近门店';//getTitleName(urlParam)
                 return {
                     // stores: stores,
-                    orderaddress: orderdata.order.logisticInfo.address,
-                    urlParam: urlParam,
+                    orderaddress: 'a',//orderdata.order.logisticInfo.address,
+                    urlParam: '',//urlParam,
                     loading:{
                       show:false,
                       text:'加载中...'
                     },
-                    showstore: (urlParam.action.type == 2) ? true : false
+                    showstore: true//(urlParam.action.type == 2) ? true : false
                 }
             })
         }
@@ -157,7 +156,49 @@ export default {
       let self=this
       this.$log();
       //取store信息
-      store.fetchStors()
+      // store.fetchStors()
+      Promise.resolve([
+          {
+            address:"上海市徐汇区桂平路418号2601室",
+            contact:"吴涛",
+            latAndLng:"",
+            mobile:"13156567676",
+            phone:"0370-9087643",
+            storeCode:"1",
+            storeName:"总仓",
+            warehouseId:"",
+          },
+          {
+            address:"上海市徐汇区桂平路418号2601室",
+            contact:"",
+            latAndLng:"",
+            mobile:"14790481992",
+            phone:"",
+            storeCode:"4",
+            storeName:"测试1",
+            warehouseId:"",
+          },
+          {
+            address:"上海上海市浦东新区芳甸路300号联洋广场A区",
+            contact:"",
+            latAndLng:"",
+            mobile:"15618952650",
+            phone:"",
+            storeCode:"47",
+            storeName:"联洋广场",
+            warehouseId:"",
+          },
+          {
+            address:"上海市闵行区万源路400弄",
+            contact:"蛋蛋",
+            latAndLng:"",
+            mobile:"18217123101",
+            phone:"",
+            storeCode:"60",
+            storeName:"蛋蛋小卖部",
+            warehouseId:"",
+          }
+      ])
       .then(stores=>{
         //默认距离设置9999999  storesBox中会直接显示“未获取距离“  并且排序会排在最后面
         stores.map(store=>store.range=9999999);
@@ -168,6 +209,7 @@ export default {
           self.$nextTick(()=>{
             self.$refs.scroller.reset()
           })
+          self.menuclick('menu1');
         },stores.length*100)
         //取门店地址经纬度
         return Promise.all(self.stores.map(store => getAddressLngLat(store.address)))

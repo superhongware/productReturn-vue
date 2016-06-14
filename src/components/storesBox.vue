@@ -31,7 +31,7 @@ export default {
 }
 </script>
 
-<style lang="sass">
+<style lang="scss">
 .container {
   width: 300px;
 }
