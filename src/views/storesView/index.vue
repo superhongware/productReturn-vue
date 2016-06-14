@@ -165,38 +165,64 @@ export default {
             mobile:"13156567676",
             phone:"0370-9087643",
             storeCode:"1",
-            storeName:"总仓",
+            storeName:"漕河泾店(总店)",
             warehouseId:"",
+            hui:"每满100元减10元"
           },
           {
-            address:"上海市徐汇区桂平路418号2601室",
+            address:"上海市黄浦区云南南路261号",
             contact:"",
             latAndLng:"",
             mobile:"14790481992",
             phone:"",
             storeCode:"4",
-            storeName:"测试1",
+            storeName:"人民广场(分店)",
             warehouseId:"",
+            hui:"每满100元减10元"
           },
           {
-            address:"上海上海市浦东新区芳甸路300号联洋广场A区",
+            address:"上海上卢湾区太仓70号",
             contact:"",
             latAndLng:"",
             mobile:"15618952650",
             phone:"",
             storeCode:"47",
-            storeName:"联洋广场",
+            storeName:"新天地(新天地店)",
             warehouseId:"",
+            hui:"每满100元减10元"
           },
           {
-            address:"上海市闵行区万源路400弄",
+            address:"上海市南京西路1266号",
             contact:"蛋蛋",
             latAndLng:"",
             mobile:"18217123101",
             phone:"",
             storeCode:"60",
-            storeName:"蛋蛋小卖部",
+            storeName:"静安寺(旗舰店)",
             warehouseId:"",
+            hui:''
+          },
+          {
+            address:"上海市长宁区1018号5楼5087",
+            contact:"蛋蛋",
+            latAndLng:"",
+            mobile:"18217123101",
+            phone:"",
+            storeCode:"60",
+            storeName:"中山公园(长风店)",
+            warehouseId:"",
+            hui:''
+          },
+          {
+            address:"普陀区中山北路3300号",
+            contact:"蛋蛋",
+            latAndLng:"",
+            mobile:"18217123101",
+            phone:"",
+            storeCode:"60",
+            storeName:"月新环球港(普陀店)",
+            warehouseId:"",
+            hui:''
           }
       ])
       .then(stores=>{

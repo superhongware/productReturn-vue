@@ -13,6 +13,7 @@
           </span>
       </div>
       <p class="storeadress">{{store.address}}</p>
+      <p class="hui" v-if="store.hui"><span class="huiicon">惠</span>{{store.hui}}</p>
   </li>
 </ul>
 </template>
@@ -64,8 +65,23 @@ export default {
   background-color:#fff;
   border-bottom:1px solid #ddd;
   width:100%;
-  height:70px;
+  // height:70px;
   padding:10px;
+  .hui{
+    font-size: 10px;
+    color:#999;
+  }
+  .huiicon{
+    display: inline-block;
+    height: 20px;
+    background-color: #ff5f5f;
+    width: 20px;
+    text-align: center;
+    line-height: 20px;
+    font-size: 14px;
+    margin-right:5px;
+    color:#fff;
+  }
 }
 .rangetext{
   text-align:right;

@@ -3,7 +3,7 @@ import Router from 'vue-router'
 import { domain, fromNow } from './filters'
 import App from './views/App.vue'
 import VueAnimatedList from 'vue-animated-list'
-import returnPdView from './views/returnPdView'
+// import returnPdView from './views/returnPdView'
 import storesView from './views/storesView'
 
 // import returnPdView0 from './views/returnPdView0'
@@ -43,18 +43,18 @@ router.map({
   // '/item/:id': {
   //   component: ItemView
   // },
-  '/returnProducts':{
-    component:returnPdView
-  },
-  '/stores':{
+  // '/returnProducts':{
+  //   component:returnPdView
+  // },
+  '/':{
     component:storesView
   },
   // '/test':{
   //   component:returnPdView0
   // },
-  '/try':{
-    component:tryscroller
-  }
+  // '/try':{
+  //   component:tryscroller
+  // }
   // '/coupon':{
   //   component:couponView
   // }
@@ -69,7 +69,7 @@ router.beforeEach(function () {
 //   })
 // }else {
   router.redirect({
-    '*': '/returnProducts'
+    '*': '/'
   })
 // }
 
