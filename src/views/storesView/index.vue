@@ -24,14 +24,14 @@
             <div class="pannelTitle">我的位置</div>
             <div class="flexBox addressinfo">
                 <div>
-                    <p class="orderlocationbar"  v-show="showMyLocation">
+                    <p class="orderlocationbar" >
                         <span class="iconfont maincolor icon-dizhi orangecolor"></span>当前位置&nbsp;&nbsp;&nbsp;&nbsp;
                         <!-- <span class="iconfont rightjiantou icon-fanhui4"></span> -->
                     </p>
-                    <p class="orderlocationbar" @click="show2=true" v-show='!showMyLocation'>
+                    <!-- <p class="orderlocationbar" @click="show2=true" v-show='!showMyLocation'>
                         <span class="iconfont maincolor icon-kuaididaishou"></span> 订单收货地址
                         <span class="iconfont rightjiantou icon-fanhui4"></span>
-                    </p>
+                    </p> -->
                 </div>
                 <div class="startaddress" v-show='showMyLocation'>
                     {{nowaddress}}
@@ -141,7 +141,7 @@ export default {
                 document.title = '附近门店';//getTitleName(urlParam)
                 return {
                     // stores: stores,
-                    orderaddress: 'a',//orderdata.order.logisticInfo.address,
+                    orderaddress: '',//orderdata.order.logisticInfo.address,
                     urlParam: '',//urlParam,
                     loading:{
                       show:false,
