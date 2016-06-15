@@ -22,14 +22,23 @@
 
         <div class="fadepage" v-show="showstore" transition="slideLeft">
 
-            <div class="pannelTitle">我的位置</div>
+            <!-- <div class="pannelTitle">我的位置</div> -->
             <div class="flexBox addressinfo">
-                <div>
-                    <p class="orderlocationbar" @click="show2=true" v-show="showMyLocation">
+              <span class="title">选择定位地址</span>
+              <span class="leftbtn btn" @click="menuclick('menu2')">
+                <span class="checkbox" :class="{'active':!showMyLocation}"><span></span></span>
+                订单收货地址
+              </span>
+              <span class="rightbtn btn" @click="menuclick('menu1')">
+                <span class="checkbox" :class="{'active':showMyLocation}"><span></span></span>
+                当前位置
+              </span>
+                <!-- <div>
+                    <p class="orderlocationbar" @click="showAction=true" v-show="showMyLocation">
                         <span class="iconfont maincolor icon-dizhi orangecolor"></span>当前位置
                         <span class="iconfont rightjiantou icon-fanhui4"></span>
                     </p>
-                    <p class="orderlocationbar" @click="show2=true" v-show='!showMyLocation'>
+                    <p class="orderlocationbar" @click="showAction=true" v-show='!showMyLocation'>
                         <span class="iconfont maincolor icon-kuaididaishou"></span> 订单收货地址
                         <span class="iconfont rightjiantou icon-fanhui4"></span>
                     </p>
@@ -39,10 +48,15 @@
                 </div>
                 <div class="startaddress" v-show='!showMyLocation'>
                     {{orderaddress}}
-                </div>
+                </div> -->
             </div>
-            <div class="pannelTitle">附近门店</div>
-            <scroller lock-x v-show='stores' :style='{height:scrollerHeight1}' v-ref:scroller>
+            <div class="pannelTitle">
+              附近门店
+              <span class="showmapbtn iconfont icon-mn03"  @click="changeMapList" v-show="!showmap"></span>
+              <span class="showmapbtn iconfont icon-liebiao" @click="changeMapList" v-show="showmap"></span>
+            </div>
+            <div id="baidumap" v-show="stores&&showmap" :style="{height:scrollerHeight1}"></div>
+            <scroller lock-x v-show="stores&&!showmap" :style="{height:scrollerHeight1}" v-ref:scroller>
                 <stores-box :stores="stores"></stores-box v-ref:storesBox>
             </scroller>
         </div>
@@ -57,7 +71,7 @@
         </div>
 
     </div>
-    <actionsheet :show.sync="show2" :menus="menus2" @menu-click="menuclick" cancel-text="取消" show-cancel></actionsheet>
+    <!-- <actionsheet :show.sync="showAction" :menus="menus2" @menu-click="menuclick" cancel-text="取消" show-cancel></actionsheet> -->
     <loading :show="loading.show" :text="loading.text"></loading>
 </div>
 
@@ -101,7 +115,7 @@ export default {
         Scroller,
         storesBox,
         qrcodeBox,
-        Actionsheet,
+        // Actionsheet,
     },
 
     data() {
@@ -117,9 +131,11 @@ export default {
             },
             showstore: true,
             showMyLocation: false,
-            scrollerHeight1: window.innerHeight - 164 + 'px',
+            scrollerHeight1: window.innerHeight - 126 + 'px',
             scrollerHeight: window.innerHeight - 44 + 'px',
-            show2: false,
+            showAction: false,
+            showmap:false,
+            baidumap:'',
             nowaddress: '',
             orderLngLat: {},
             menus2: {
@@ -140,6 +156,8 @@ export default {
             ]).then((data) => {
                 let [ orderdata, urlParam] = data
                 document.title = getTitleName(urlParam)
+                // console.log('returndata',orderdata.order.logisticInfo.address);
+                self.getmaininfo();
                 return {
                     // stores: stores,
                     orderaddress: orderdata.order.logisticInfo.address,
@@ -154,46 +172,61 @@ export default {
         }
     },
     ready: function() {
-      let self=this
-      this.$log();
-      //取store信息
-      store.fetchStors()
-      .then(stores=>{
-        //默认距离设置9999999  storesBox中会直接显示“未获取距离“  并且排序会排在最后面
-        stores.map(store=>store.range=9999999);
-        //存门店信息
-        self.stores=stores
-        //更新scroller
-        setTimeout(()=>{
-          self.$nextTick(()=>{
-            self.$refs.scroller.reset()
-          })
-        },stores.length*100)
-        //取门店地址经纬度
-        return Promise.all(self.stores.map(store => getAddressLngLat(store.address)))
-      })
-      .then(storeLLs=>{
-        // 存门店经纬度
-        storeLLs.map((storeLL,i)=>self.stores[i].point=storeLL)
-        // 取订单地址经纬度
-        return getAddressLngLat(self.orderaddress)
-      })
-      .then(orderLL=>{
-        // 存订单地址经纬度
-        self.orderLngLat=orderLL
-        // 计算订单地址与门店距离
-        self.setRange(self.orderLngLat)
-      })
-
+      console.log('ready');
     },
     methods: {
-      // remove(){
-      //   let cc=[],self=this
-      //   self.stores.unshift(cc.concat(self.stores[0]))
-      // },
+        getmaininfo(){
+          // console.log('加载门店信息');
+          let self=this
+          this.$log();
+          //取store信息
+          store.fetchStors()
+          .then(stores=>{
+            //默认距离设置9999999  storesBox中会直接显示“未获取距离“  并且排序会排在最后面
+            stores.map(store=>store.range=9999999);
+            //存门店信息
+            self.stores=stores
+            //更新scroller
+            setTimeout(()=>{
+              self.$nextTick(()=>{
+                self.$refs.scroller.reset()
+              })
+            },stores.length*150)
+            // console.log('门店信息搞定');
+            //取门店地址经纬度
+            return Promise.all(self.stores.map(store => getAddressLngLat(store.address)))
+          })
+          .then(storeLLs=>{
+            // 存门店经纬度
+            storeLLs.map((storeLL,i)=>self.stores[i].point=storeLL)
+            // console.log('门店经纬度搞定',self.orderaddress);
+            // 取订单地址经纬度
+            return getAddressLngLat(self.orderaddress)
+          })
+          .then(orderLL=>{
+            // 存订单地址经纬度
+            self.orderLngLat=orderLL
+            // console.log('订单经纬度搞定');
+            // 计算订单地址与门店距离
+            self.setRange(self.orderLngLat)
+            // if(self.showmap=true){
+            //   self.changeMapList(orderLL)
+            // }
+          })
+        },
+        changeMapList(){
+          let self = this
+          this.showmap=!this.showmap
+          if(!this.baidumap){
+            setTimeout(()=>{
+              this.baidumap= new BMap.Map("baidumap")
+              this.setmap(this.orderLngLat)
+            })
+          }
+        },
         menuclick(a) {
             let self = this
-            if (a === 'menu1') {
+            if (a === 'menu1' && self.showMyLocation === false) {
                 self.showMyLocation = true
                 self.loading.show = true
                 self.loading.text = '正在获取地址..'
@@ -205,7 +238,7 @@ export default {
                         self.nowaddress=r.address.city+r.address.district+r.address.street+r.address.street_number
                         self.setRange(r.point)
                     })
-            } else if (a === 'menu2') {
+            } else if (a === 'menu2' && self.showMyLocation === true) {
                 self.showMyLocation = false
                 self.setRange(self.orderLngLat)
             }
@@ -229,8 +262,58 @@ export default {
                     self.$set('stores[' + i + '].range', range.tr[0].cg)
                   },200*i)
                 })
+                self.setmap(start)
             })
+        },
+        setmap(centerpoint){
+            // console.log(centerpoint.lng, centerpoint.lat);
+            // var point = new BMap.Point(116.404, 39.915);
+            // var point = new BMap.Point(31.170, 121.411);
+            let pointnmae = "订单收货地址"
+            let deletename = '当前位置'
 
+            if(this.showMyLocation){
+              pointnmae = "当前位置"
+              deletename = '订单收货地址'
+            }
+            //移动地图到相应位置  显示相应尺寸
+            let point = new BMap.Point(centerpoint.lng, centerpoint.lat)
+            this.baidumap.centerAndZoom(point, 11)
+            //获取地图上的点  没点则设置点  有点说明已经设置过门店就不用设置了 并 清理之前设置的centerpoint点
+            var allOverlay = this.baidumap.getOverlays()
+            console.log(allOverlay.length)
+            // debugger;
+            if(allOverlay.length > 0){
+              //清理之前的centerpoint点
+              // console.log('##')
+              allOverlay.forEach((overlay,i)=>{
+                if(overlay.getLabel && overlay.getLabel().content === deletename){
+                  // console.log('$$')
+                  this.baidumap.removeOverlay(overlay);
+                  // console.log(overlay.getLabel().content,centerpoint,deletename,pointnmae)
+                }
+              })
+              // console.log('@@')
+            }else{
+              //设置point点
+              this.stores.forEach(store=>{
+                if(store.point){
+                  this.markpoint(this.baidumap,store.point,store.storeName)
+                }
+              })
+            }
+            // console.log('&&')
+            // console.log(centerpoint,pointnmae);
+            //加上centerpoin点
+            this.markpoint(this.baidumap,centerpoint,pointnmae)
+          	// marker.setAnimation(BMAP_ANIMATION_BOUNCE); //跳动的动画
+        },
+        markpoint(map,mappoint,text){
+          let point = new BMap.Point(mappoint.lng, mappoint.lat);
+          let marker = new BMap.Marker(point);  // 创建标注
+          let label = new BMap.Label(text,{offset:new BMap.Size(-10,-20)});
+          marker.setLabel(label)
+          map.addOverlay(marker);
         }
     },
 }

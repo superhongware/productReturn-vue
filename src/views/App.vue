@@ -14,7 +14,7 @@
 
 </script>
 <style lang='sass'>
-@import url(//at.alicdn.com/t/font_1461495364_9250605.css);
+@import url(//at.alicdn.com/t/font_1465983171_0968711.css);
 @import "~vux/vux.css";
 @import "~vue-animate/dist/vue-animate.min.css";
 @import "../variables.scss";
