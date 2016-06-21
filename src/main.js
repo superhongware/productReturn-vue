@@ -5,6 +5,7 @@ import App from './views/App.vue'
 import VueAnimatedList from 'vue-animated-list'
 import returnPdView from './views/returnPdView'
 import storesView from './views/storesView'
+import couponView from './views/couponView'
 
 // import returnPdView0 from './views/returnPdView0'
 import tryscroller from './views/try/scroller.vue'
@@ -45,6 +46,9 @@ router.map({
   // },
   '/returnProducts':{
     component:returnPdView
+  },
+  '/coupon':{
+    component:couponView
   },
   '/stores':{
     component:storesView
