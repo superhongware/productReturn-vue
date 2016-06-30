@@ -1,0 +1,112 @@
+@import 'src/variables.scss';
+body {
+    background: #f2f2f2;
+}
+.discount {
+    width: 260px;
+    height: 370px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin: -185px 0 0 -130px;
+    background: #fff;
+    border-radius: 5px;
+    border: 1px solid #ddd;
+    -webkit-box-shadow: 0 0 4px #bbb;
+    box-shadow: 0 0 4px #bbb;
+    .disIcon {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        display: block;
+        border: 2px solid #fff;
+        -webkit-box-shadow: 0 0 2px #ddd;
+        box-shadow: 0 0 2px #ddd;
+        position: absolute;
+        left: 50%;
+        margin-left: -30px;
+        top: -30px;
+        z-index:99
+    }
+    .disImg {
+        background: #427dbf;
+        width: 100%;
+        height: 120px;
+        display: block;
+        border-radius: 5px 5px 0 0;
+        position:relative;
+        img {
+            width: 60px;
+        height: 60px;
+        display: block;
+        position: absolute;
+        left: 50%;
+        margin-left: -30px;
+        top: 30px;
+        z-index:99
+        }
+        .disName{
+            .disNamet{
+                text-align: right;color:#fff;font-size:50px;position:absolute;right:85px;bottom:20px;
+                span{
+                    font-size:30px
+                }
+            }
+            p{
+                color:#eee;font-size:12px;width:100px;position:absolute;right:30px;bottom:20px;text-align: right;
+            }
+        }
+        .disNamezhe{
+             .disNamet{
+                 right:120px;bottom:25px;
+                 span{
+                    font-size:24px
+                }
+             }
+             
+           p{
+               right:80px;
+            } 
+        }
+    }
+    h1 {
+        text-align: center;
+        color: #427dbf;
+        font-size: 18px;
+        font-weight: bold;
+        line-height: 45px;
+    }
+    .weui_btn {
+        border-radius: 5px;
+        background: #427dbf;
+        width: auto;
+        font-size: 16px;
+        padding: 0 20px;
+    }
+    .weui_btn_primary:not(.weui_btn_disabled):active {
+        background: #007aff;
+        color: #fff;
+    }
+    .mui-btn-disable {
+        background: #bbb;
+        color: #fff;
+        padding: 0 15px;
+    }
+    >p {
+        line-height: 20px;
+        color: #666;
+        margin: 20px 25px 0;
+        border-top: 1px dashed #ddd;
+        padding-top: 15px;
+        font-size: 12px;
+        max-height:136px;overflow-y:auto;
+    }
+}
+.x-header {
+    -webkit-box-shadow: 0 2px 2px #ddd;
+    box-shadow: 0 2px 2px #ddd;
+    .x-header-title {
+        color: #333;
+        font-weight: bold;
+    }
+}

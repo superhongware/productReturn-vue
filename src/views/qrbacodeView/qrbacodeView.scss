@@ -1,0 +1,45 @@
+@import 'src/variables.scss';
+body {
+    background: #f2f2f2;
+}
+.qrcount {
+    width: 260px;
+    height: 360px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin: -180px 0 0 -130px;
+    background: #fff;
+    border-radius: 5px;
+    border: 1px solid #ddd;
+    -webkit-box-shadow: 0 0 4px #bbb;
+    box-shadow: 0 0 4px #bbb;
+    h2{
+       color:#888;font-size:14px;text-align: center;margin-top:20px
+    }
+    h1 {
+        text-align: center;
+        color: #427dbf;
+        font-size: 18px;
+        font-weight: bold;
+        line-height: 35px;
+    }
+    .qrcode{
+        width:160px;height:160px;margin:0 auto
+    }
+    .bacode{
+        width:160px;margin:0px auto
+    }
+    p{
+        color:#999;text-align: center;font-size:12px;
+    }
+    
+}
+.x-header {
+    -webkit-box-shadow: 0 2px 2px #ddd;
+    box-shadow: 0 2px 2px #ddd;
+    .x-header-title {
+        color: #333;
+        font-weight: bold;
+    }
+}

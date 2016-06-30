@@ -6,6 +6,10 @@ import VueAnimatedList from 'vue-animated-list'
 import returnPdView from './views/returnPdView'
 import storesView from './views/storesView'
 import couponView from './views/couponView'
+import evaluationView from './views/evaluation'
+import couponDetailView from './views/couponView/couponDetail'
+import mycouponView from './views/mycouponView'
+import qrbacodeView from './views/qrbacodeView'
 
 // import returnPdView0 from './views/returnPdView0'
 import tryscroller from './views/try/scroller.vue'
@@ -47,8 +51,25 @@ router.map({
   '/returnProducts':{
     component:returnPdView
   },
+  '/evaluation':{
+    component:evaluationView,
+    name:'evaluation'
+  },
   '/coupon':{
-    component:couponView
+    component:couponView,
+    name:'coupon'
+  },
+  '/couponDetail/:code':{
+    component:couponDetailView,
+    name:'couponDetail'
+  },
+  '/mycoupon':{
+    component:mycouponView,
+     name: 'mycoupon',
+  },
+  '/qrbacode/:code/:name':{
+    component:qrbacodeView,
+    name: 'qrbacode',
   },
   '/stores':{
     component:storesView

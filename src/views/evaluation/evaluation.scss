@@ -1,0 +1,84 @@
+@import 'src/variables.scss';
+body {
+    background: #f2f2f2;
+    padding-bottom:50px
+}
+.weui_cells_title {
+    font-size: 18px;
+    color: #555;
+    margin-top: 0.47em;
+}
+.evaluater {
+    background: #fff;
+    border-top: 1px solid #ddd;
+    .evaluatBtn {
+        padding:5px;
+        .weui_btn {
+            display: inline-block;
+            line-height: 2;
+            font-size: 12px;
+            color: #555;
+            border:1px solid #ddd;
+            margin-top:5px;margin-right:5px
+        }
+        
+        .weui_btn:after{
+            border:none
+        }
+        .weui_btn_active{
+            border:1px solid #FF9900
+        }
+    }
+    .weui_cells{
+            margin-top:0;
+        }
+    .evaluatPd {
+        padding: 5px 10px;
+        text-align: right;
+        border-bottom: 1px solid #ddd;
+    }
+}
+.evaluatList {
+    border-bottom: 1px solid #ddd;
+    padding-left: 15px;
+    padding-right: 15px;
+    line-height: 40px;
+    .evaluatName {
+        color: #666;
+        font-size: 18px;
+        img {
+            display: block;
+            width: 60px;
+            height: 60px;
+            margin: 6px 0;
+        }
+    }
+}
+.evaluatInfo {
+    div {
+        font-size: 14px;
+        color: #666;
+        line-height: 20px;
+    }
+    .goodsName {
+        color: #333;
+    }
+}
+.evaluatFirm{
+    position: fixed;width:100%;height:50px;left:0;bottom:0;border-top:1px solid #ddd;background: #fff;
+    .weui_btn{
+        float:right;
+        background: #017AFD;border-radius: 0;color:#fff;line-height:50px
+    }
+}
+.x-header {
+    -webkit-box-shadow: 0 2px 2px #ddd;
+    box-shadow: 0 2px 2px #ddd;
+    .x-header-title {
+        color: #333;
+        font-weight: bold;
+    }
+}
+.pContent{
+    line-height:20px;padding:5px 10px;font-size:14px;color:#666;border-bottom:1px solid #ddd
+}

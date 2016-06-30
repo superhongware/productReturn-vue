@@ -10,6 +10,8 @@ export default function hwSuperApi(maindata){
   let data = {
     nick: 'V5mobile',
     name: 'V5mobile',
+//  nick: '欧少辉',
+//  name: '欧少辉',
     format: 'json',
     timestamp: parseInt(new Date().getTime()/1000).toString(),
   };
