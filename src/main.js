@@ -10,6 +10,7 @@ import evaluationView from './views/evaluation'
 import couponDetailView from './views/couponView/couponDetail'
 import mycouponView from './views/mycouponView'
 import qrbacodeView from './views/qrbacodeView'
+import registerView from './views/registerView'
 
 // import returnPdView0 from './views/returnPdView0'
 import tryscroller from './views/try/scroller.vue'
@@ -79,10 +80,10 @@ router.map({
   // },
   '/try':{
     component:tryscroller
+  },
+  '/register':{
+    component:registerView
   }
-  // '/coupon':{
-  //   component:couponView
-  // }
 })
 
 router.beforeEach(function () {

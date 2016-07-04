@@ -12,13 +12,15 @@ import {
 	UrlParam
 } from './tools/GetUrlParam'
 
-// const devapiurl='http://swapi.sandbox.hongware.com'
 // const api = new Firebase('https://hacker-news.firebaseio.com/v0')
-//const devapiurl='http://sandbox.swapi.hongware.com'
-//const devapiurl='http://sandbox.o2o.swapi.hongware.com/'
-//const apiurl=devapiurl+'/openApi/dyncHongware/mobile/'
-const apiurl="http://"+window.location.host+'/openApi/dyncHongware/mobile/';
+let apiurl="http://"+window.location.host+'/openApi/dyncHongware/mobile/';
 
+if(location.host.match('localhost')||location.host.match('192.168.')){
+	// const devapiurl='http://swapi.sandbox.hongware.com'
+	// const devapiurl='http://sandbox.o2o.swapi.hongware.com/'
+	const devapiurl='http://sandbox.swapi.hongware.com'
+	apiurl=devapiurl+'/openApi/dyncHongware/mobile/';
+}
 //const apiurl = 'http://192.168.50.216:8089/openApi/dyncHongware/mobile/'
 const itemsCache = Object.create(null)
 const store = new EventEmitter()
