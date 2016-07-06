@@ -1,27 +1,14 @@
 // import Firebase from 'firebase'
-import {
-	EventEmitter
-} from 'events'
-import {
-	Promise
-} from 'es6-promise'
-import {
-	hwGetJsonp
-} from './tools/HW_SuperApi'
-import {
-	UrlParam
-} from './tools/GetUrlParam'
+import { EventEmitter } from 'events'
+import { Promise } from 'es6-promise'
+import { hwGetJsonp, hwPost } from './tools/HW_SuperApi'
+import { UrlParam } from './tools/GetUrlParam'
+import config from './config'
 
 // const api = new Firebase('https://hacker-news.firebaseio.com/v0')
-let apiurl="http://"+window.location.host+'/openApi/dyncHongware/mobile/';
+let apiurl = config.apiurl+'/openApi/dyncHongware/mobile/';
 
-if(location.host.match('localhost')||location.host.match('192.168.')){
-	// const devapiurl='http://swapi.sandbox.hongware.com'
-	// const devapiurl='http://sandbox.o2o.swapi.hongware.com/'
-	const devapiurl='http://sandbox.swapi.hongware.com'
-	apiurl=devapiurl+'/openApi/dyncHongware/mobile/';
-}
-//const apiurl = 'http://192.168.50.216:8089/openApi/dyncHongware/mobile/'
+
 const itemsCache = Object.create(null)
 const store = new EventEmitter()
 const storiesPerPage = store.storiesPerPage = 30
@@ -201,5 +188,98 @@ store.CouponInitialization = () => {
 				resolve(data)
 			})
 
+	});
+}
+
+
+/*
+	发送验证码
+*/
+store.sendvcode = (mobilePhone) => {
+	// if (!objdata) {objdata = {}}
+	return new Promise(function(resolve, reject) {
+		let data = {
+			method: 'V5.mobile.wx.code.send',
+			orgCode: urlParam.action.orgCode,
+			openID: urlParam.action.openID,
+			appID: urlParam.action.appID,
+			mobilePhone: mobilePhone,
+		}
+		hwGetJsonp(apiurl + 'wxCodeSend', Object.assign({},data))
+			.then(data => {
+				resolve(data)
+			})
+	});
+}
+/*
+	用户注册
+*/
+store.register = (mobilePhone) => {
+	// if (!objdata) {objdata = {}}
+	return new Promise(function(resolve, reject) {
+		let data = {
+			method: 'V5.mobile.wx.member',
+			orgCode: 'zk',
+			openID: urlParam.action.openID,
+			appID: urlParam.action.appID,
+			mobilePhone: mobilePhone,
+		}
+		// hwGetJsonp(apiurl + 'wxMember', Object.assign({},data))
+		hwPost(apiurl + 'wxMember', Object.assign({},data))
+			.then(data => {
+				resolve(data)
+			})
+	});
+}
+/*
+	用户信息获取  主要取用户地址
+*/
+store.getMemberAddress = (mobilePhone) => {
+	// if (!objdata) {objdata = {}}
+	return new Promise(function(resolve, reject) {
+		let data = {
+			method: 'V5.mobile.channelMember.get',
+			mobilePhone: mobilePhone,
+		}
+		// hwGetJsonp(apiurl + 'wxMember', Object.assign({},data))
+		hwGetJsonp(apiurl + 'channelMemberGet', Object.assign(data,configjson))
+			.then(data => {
+				resolve(data)
+			})
+	});
+}
+/*
+	用户信息更新  主要更新用户地址
+*/
+store.setMemberAddress = (memberData) => {
+	// if (!objdata) {objdata = {}}
+	return new Promise(function(resolve, reject) {
+		let data = {
+			method: 'V5.mobile.platMember.add',
+			memberData: JSON.stringify(memberData),
+		}
+		// hwGetJsonp(apiurl + 'wxMember', Object.assign({},data))
+		hwPost(apiurl + 'platMemberAdd', Object.assign(data,configjson))
+			.then(data => {
+				resolve(data)
+			})
+	});
+}
+/*
+	地址code获取
+*/
+store.getAddressCode = () => {
+	// if (!objdata) {objdata = {}}
+	return new Promise(function(resolve, reject) {
+		let data = {
+			method: 'V5.mobile.areas.get',
+			orgCode: 'work',
+			id: 1,
+		}
+		// hwGetJsonp(apiurl + 'wxMember', Object.assign({},data))
+		hwPost(apiurl + 'areasGet', Object.assign({},data))
+			.then(data => {
+				resolve(data)
+			})
 	});
 }

@@ -10,7 +10,8 @@ import evaluationView from './views/evaluation'
 import couponDetailView from './views/couponView/couponDetail'
 import mycouponView from './views/mycouponView'
 import qrbacodeView from './views/qrbacodeView'
-import registerView from './views/registerView'
+import registerView from './views/registerView/registerView'
+import addressListView from './views/addressListView/addressListView'
 
 // import returnPdView0 from './views/returnPdView0'
 import tryscroller from './views/try/scroller.vue'
@@ -83,7 +84,10 @@ router.map({
   },
   '/register':{
     component:registerView
-  }
+  },
+  '/addressList':{
+    component:addressListView
+  },
 })
 
 router.beforeEach(function () {
