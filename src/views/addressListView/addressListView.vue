@@ -7,35 +7,35 @@
 <template>
 
 <div class="address">
-    <div v-if="memberinfo!==undefined && memberinfo.channelMember">
+    <div v-if="memberinfo!==undefined" v-show="!currentAddress.show">
       <div
-      v-for="(index, address) in memberinfo.channelMember.memberAddress"
+      v-for="(index, address) in memberinfo.addresses"
       class="addressbox">
       <!-- {{address | json} -->
-        <h2>{{address.consignee+' '+address.mobilePhone}}</h2>
-        <p>{{address.provinceName + address.cityName + address.areaName + address.address}}</p>
+        <h2>{{address.name+' '+address.mobilePhone}}</h2>
+        <p>{{address.province + address.city + address.district + address.memberAddress}}</p>
         <div class="addresslink" @click="goCallBackUrl(address)"></div>
         <div class="addressedit" @click="editAddress(index,address)">
           <i class="">i</i>
         </div>
       </div>
+      <div class="noaddresslist" v-if="memberinfo && memberinfo.addresses.length===0">
+        您还没有添加过地址，<br/>
+        点击下面按钮添加一个吧
+      </div>
+      <box gap="10px 10px">
+        <x-button type="primary" @click="editAddress()">+ 添加新地址</x-button>
+        <!-- <x-button type="warn" @click="editAddress(memberinfo.addresses.length)">删除地址</x-button> -->
+      </box>
     </div>
-    <div class="noaddresslist" v-if="memberinfo===undefined">
-      您还没有添加过地址，<br/>
-      点击下面按钮添加一个吧
-    </div>
-    <box gap="10px 10px">
-      <x-button type="primary" @click="editAddress()">+ 添加新地址</x-button>
-      <!-- <x-button type="warn" @click="editAddress(memberinfo.channelMember.memberAddress.length)">删除地址</x-button> -->
-    </box>
-    <group v-if="currentAddress.show" class="editaddress" transition="slideTop">
+    <group v-show="currentAddress.show" class="editaddress" :transition="currentAddress.show?'slideUp':'slideDown'">
       <x-input title="收货人" placeholder="名字" :min="1"  :value.sync="currentAddress.name" v-ref:name></x-input>
       <x-input title="手机号" placeholder="11位手机号" is-type="china-mobile"  :value.sync="currentAddress.phone" v-ref:phone></x-input>
       <Address title="选择地区" :list="addressData" :value.sync="currentAddress.placeCode"></Address>
       <x-textarea title="详细地址" required placeholder="街道门牌信息" :value.sync="currentAddress.address" v-ref:address></x-textarea>
       <box gap="10px 10px">
-        <x-button v-if="memberinfo && currentAddress.index < memberinfo.channelMember.memberAddress.length" type="primary" @click="saveAddress(currentAddress)">修改地址</x-button>
-        <x-button v-if="!memberinfo || currentAddress.index === memberinfo.channelMember.memberAddress.length" type="primary" @click="saveAddress(currentAddress)">保存地址</x-button>
+        <x-button v-if="memberinfo && currentAddress.index < memberinfo.addresses.length" type="primary" @click="updateAddress(currentAddress)">确认修改</x-button>
+        <x-button v-if="!memberinfo || currentAddress.index === memberinfo.addresses.length" type="primary" @click="addAddress(currentAddress)">确认添加</x-button>
         <x-button  @click="currentAddress.show=false">取消</x-button>
       </box>
     </group>
@@ -66,17 +66,16 @@ import value2name from '../../filters/value2name'
 import name2value from '../../filters/name2value'
 
 // 正式用地址代码
-// import addressData from '../../tools/address.json'
+import addressData from '../../tools/address.json'
 // 测试用代码
-import addressData from '../../tools/address0.js'
+// import addressData from '../../tools/address0.js'
 
-console.log(addressData);
 import {UrlParam} from '../../tools/GetUrlParam'
 const urlParam = UrlParam();
 import {Base64}from 'js-base64'
-const ma = Base64.encode(JSON.stringify({orgCode: "o2o", callbackUrl: 'http://192.168.50.149:8080/?action=123#!/addressList', openID:"a00001", appID:"xxxx", mobilePhone:'18202167102'}))
+const ma = Base64.encode(JSON.stringify({orgCode: "o2o", callbackUrl: 'http://192.168.50.149:8080/?action=123#!/addressList', openID:"008", appID:"xxxx"}))
 // eyJvcmdDb2RlIjoibzJvIiwiY2FsbGJhY2tVcmwiOiJodHRwOi8vMTkyLjE2OC41MC4xNDk6ODA4MC8/YWN0aW9uPTEyMyMhL3JlZ2llc3QiLCJvcGVuSUQiOiJhMDAwMDEiLCJhcHBJRCI6Inh4eHgifQ==
-console.log(ma);
+// console.log(ma);
 console.log(location.origin+'/?action='+ma+'#!/addressList');
 
 export default {
@@ -112,7 +111,7 @@ export default {
                 des: '',
             },
             loading: {
-                show: false,
+                show: true,
                 text: '加载中...'
             },
         }
@@ -121,16 +120,16 @@ export default {
         data({to: {query}}) {
             console.log(query)
             let self = this
-            if(!urlParam.action.mobilePhone){
-              // self.showAlert('mobilePhone缺失');
-              if(!urlParam.action.orgCode){
-               self.showAlert('orgCode缺失');
-               }else if(!urlParam.action.openID){
-                 self.showAlert('openID缺失');
-               }else if(!urlParam.action.appID){
-                 self.showAlert('appID缺失');
-               }
-               return;
+            // if(!urlParam.action.orgCode){
+            //   self.showAlert('orgCode缺失');
+            //   return;
+            //  }else
+            if(!urlParam.action.openID){
+              self.showAlert('openID缺失')
+              return
+            }else if(!urlParam.action.appID){
+              self.showAlert('appID缺失')
+              return
             }
             return Promise.all([
                 // store.getAddressCode(),
@@ -139,27 +138,25 @@ export default {
                 console.log(data[0]);
                 if (!data[0].isSuccess) {
                     data[0] = {
-                        channelMember: {
-                            userName: "老王",
-                            mobilePhone: "18888888888",
-                            plat: "门店",
-                            memberLevelId: "123456",
-                            memberAddress: [{
-                                mobilePhone: "15351777777",
-                                consignee: "老王",
-                                provinceName: "上海",
-                                cityName: "上海市",
-                                areaName: "徐汇区",
-                                address: "桂平路418号"
-                            }, {
-                                mobilePhone: "15351777777",
-                                consignee: "老李",
-                                provinceName: "上海",
-                                cityName: "上海市",
-                                areaName: "徐汇区",
-                                address: "桂平路418号"
-                            }]
-                        }
+                        userName: "老王",
+                        mobilePhone: "18888888888",
+                        plat: "门店",
+                        memberLevelId: "123456",
+                        addresses: [{
+                            mobilePhone: "15351777777",
+                            name: "老王",
+                            province: "上海",
+                            city: "上海市",
+                            district: "徐汇区",
+                            memberAddress: "桂平路418号"
+                        }, {
+                            mobilePhone: "15351777777",
+                            name: "老李",
+                            province: "上海",
+                            city: "上海市",
+                            district: "徐汇区",
+                            memberAddress: "桂平路418号"
+                        }]
                     }
                 }
                 // let [ orderdata, urlParam] = data
@@ -167,8 +164,11 @@ export default {
                 // console.log('returndata',orderdata.order.logisticInfo.address);
                 // self.getmaininfo();
                 return {
-                    // stores: stores,
                     memberinfo: data[0],
+                    loading: {
+                        show: false,
+                        text: '加载中...'
+                    }
                 }
             })
         }
@@ -202,37 +202,41 @@ export default {
                 return name2value(name, addressData)
             },
             goCallBackUrl(address){
-              // let url = urlParam.action.callbackUrl
-              // let params = ''
-              // let addressname = [address.provinceName, address.cityName, address.areaName];
-              // let placeCode = self.getPlaceValue(addressname);
-              // address.provinceCode = placeCode[0]
-              // address.cityCode = placeCode[1]
-              // address.areaCode = placeCode[2]
-              // for (key in address) {
-              //   params+= '&' + key + '=' + address[key]
-              // }
-              // url+'?action='params.slice(1)
+              let self = this;
+              // let url = 'http://192.168.50.149:8080/?mm=asd#!/addressList'
+              let url = urlParam.action.callbackUrl
+              let hash = url.split('#')[1]
+              let search = url.split('#')[0].split('?')[1]
+              let mainurl = url.split('#')[0].split('?')[0]
+
+              let addressname = [address.province, address.city, address.district];
+              let placeCode = self.getPlaceValue(addressname);
+              address.provinceCode = placeCode[0]
+              address.cityCode = placeCode[1]
+              address.areaCode = placeCode[2]
+              let resulturl = mainurl + '?action=' + encodeURIComponent(Base64.encode(JSON.stringify(address))) + (hash ? ('#' + hash) : '')
+              // window.location.href = resulturl
+              console.log(resulturl);
             },
             editAddress(index,address) {
                 let self = this;
-                if (index&&address) {
+                if (address) {
                     let addressname = [];
-                    if(address.provinceName&&address.cityName&&address.areaName){
-                      addressname = [address.provinceName, address.cityName, address.areaName];
+                    if(address.province&&address.city&&address.district){
+                      addressname = [address.province, address.city, address.district];
                     }
                     self.$set('currentAddress', {
                         index: index,
                         show: true,
                         phone: address.mobilePhone,
-                        name: address.consignee,
+                        name: address.name,
                         placeCode: addressname.length>0?self.getPlaceValue(addressname):[],
                         placeName: addressname,
-                        address: address.address,
+                        address: address.memberAddress,
                     })
                 }else {
                   self.$set('currentAddress', {
-                      index: self.memberinfo ? self.memberinfo.channelMember.memberAddress.length : 0,
+                      index: self.memberinfo ? self.memberinfo.addresses.length : 0,
                       show: true,
                       phone: '',
                       name: '',
@@ -242,53 +246,87 @@ export default {
                   })
                 }
             },
-            saveAddress(currentAddress){
+            checkSubmitAddress(){
               let self = this
-              if(currentAddress.name==='' || !self.$refs.name.valid){
+              let valid = true;
+              if(self.currentAddress.name==='' || !self.$refs.name.valid){
                 self.showAlert('请填写名字')
-                return;
-              }else if (currentAddress.phone==='' || !self.$refs.phone.valid) {
+                valid = false;
+              }else if (self.currentAddress.phone==='' || !self.$refs.phone.valid) {
                 self.showAlert('请填写正确手机号')
-                return;
-              }else if (currentAddress.address==='') {
+                valid = false;
+              }else if (self.currentAddress.address==='') {
                 self.showAlert('请填写详细地址')
-                return;
+                valid = false;
               }
-
-              if(!self.memberinfo){
+              return valid;
+            },
+            addAddress(currentAddress){
+              let self = this
+              if (!self.checkSubmitAddress()) {
+                return
+              }
+              if(self.memberinfo.flag === '1'){
                 self.openLoading('注册用户信息...')
                 //注册用户
                 store.register(currentAddress.phone)
                 .then(data=>{
-                  console.log(data);
-                  if(data.success){
+                  self.closeLoading()
+                  if(data.isSuccess){
                     //更新地址
-                    self.openLoading('更新地址...')
-                    self.updateAddress(currentAddress)
+                    self.$set('memberinfo.flag',0)
+                    self.runAddAddress(currentAddress)
                   }else{
-                    self.closeLoading()
                     self.showAlert(data.map.errorMsg)
                   }
                 })
               }else{
-                self.updateAddress(currentAddress)
+                self.runAddAddress(currentAddress)
               }
             },
             updateAddress(currentAddress){
               let self = this
-              let sendedata = Object.assign({},self.memberinfo)
-              sendedata.channelMember.memberAddress[currentAddress.index] = self.getCurrentAddress(currentAddress)
+              if (!self.checkSubmitAddress()) {
+                return
+              }
+              self.showAlert('暂不支持编辑地址')
+              return
+              self.runEditAddress(currentAddress)
+            },
+            runUpdateAddress(currentAddress){
+              let self = this
               self.openLoading('更新地址...')
-              store.setMemberAddress(sendedata)
+              store.editMemberAddress(sendedata)
               .then(data=>{
                 self.closeLoading()
-                if(data.issuccess){
-                  self.$set('memberinfo',sendedata)
+                if(data.isSuccess){
+                  self.updateLocalAddress(currentAddress)
                   self.$set('currentAddress.show',false)
                 }else{
                   self.showAlert(data.map.errorMsg)
                 }
               })
+            },
+            runAddAddress(currentAddress){
+              let self = this
+              self.openLoading('添加地址...')
+              store.addMemberAddress(self.getCurrentAddress(currentAddress))
+              .then(data=>{
+                self.closeLoading()
+                if(data.isSuccess === true){
+                  self.updateLocalAddress(currentAddress)
+                  console.log(data.isSuccess);
+                  self.$set('currentAddress.show',false)
+                }else{
+                  self.showAlert(data.map.errorMsg)
+                }
+              })
+            },
+            updateLocalAddress(currentAddress){
+              let self = this
+              let localAddress = Object.assign({},self.memberinfo)
+              localAddress.addresses[currentAddress.index] = self.getCurrentAddress(currentAddress)
+              self.$set('memberinfo',localAddress)
             },
             getCurrentCode(currentAddress) {
                 let self = this
@@ -302,12 +340,12 @@ export default {
                 let self = this
                 let placeName = self.getPlaceName(currentAddress.placeCode);
                 return {
-                    address: currentAddress.address,
+                    memberAddress: currentAddress.address,
                     mobilePhone: currentAddress.phone,
-                    consignee: currentAddress.name,
-                    provinceName: placeName[0],
-                    cityName: placeName[1],
-                    areaName: placeName[2],
+                    name: currentAddress.name,
+                    province: placeName[0],
+                    city: placeName[1],
+                    district: placeName[2],
                 }
             },
             openLoading(text) {

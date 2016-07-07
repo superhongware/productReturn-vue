@@ -218,53 +218,85 @@ store.register = (mobilePhone) => {
 	// if (!objdata) {objdata = {}}
 	return new Promise(function(resolve, reject) {
 		let data = {
-			method: 'V5.mobile.wx.member',
+			method: 'V5.mobile.wx.member.create',
 			orgCode: 'zk',
 			openID: urlParam.action.openID,
 			appID: urlParam.action.appID,
 			mobilePhone: mobilePhone,
 		}
 		// hwGetJsonp(apiurl + 'wxMember', Object.assign({},data))
-		hwPost(apiurl + 'wxMember', Object.assign({},data))
+		hwPost(apiurl + 'wxMemberCreate', Object.assign({},data))
 			.then(data => {
 				resolve(data)
 			})
 	});
 }
 /*
-	用户信息获取  主要取用户地址
+	用户地址列表获取
 */
 store.getMemberAddress = (mobilePhone) => {
 	// if (!objdata) {objdata = {}}
 	return new Promise(function(resolve, reject) {
 		let data = {
-			method: 'V5.mobile.channelMember.get',
-			mobilePhone: mobilePhone,
+			method: 'V5.mobile.member.address.search',
+			orgCode: 'zk',
+			openID: urlParam.action.openID,
+			appID: urlParam.action.appID,
 		}
 		// hwGetJsonp(apiurl + 'wxMember', Object.assign({},data))
-		hwGetJsonp(apiurl + 'channelMemberGet', Object.assign(data,configjson))
+		hwGetJsonp(apiurl + 'memberAddressSearch', Object.assign(data,configjson))
 			.then(data => {
 				resolve(data)
 			})
 	});
 }
+// store.getMemberAddress = (mobilePhone) => {
+// 	// if (!objdata) {objdata = {}}
+// 	return new Promise(function(resolve, reject) {
+// 		let data = {
+// 			method: 'V5.mobile.channelMember.get',
+// 			mobilePhone: mobilePhone,
+// 		}
+// 		// hwGetJsonp(apiurl + 'wxMember', Object.assign({},data))
+// 		hwGetJsonp(apiurl + 'channelMemberGet', Object.assign(data,configjson))
+// 			.then(data => {
+// 				resolve(data)
+// 			})
+// 	});
+// }
 /*
-	用户信息更新  主要更新用户地址
+	用户地址新增
 */
-store.setMemberAddress = (memberData) => {
+store.addMemberAddress = (addressInfo) => {
 	// if (!objdata) {objdata = {}}
 	return new Promise(function(resolve, reject) {
 		let data = {
-			method: 'V5.mobile.platMember.add',
-			memberData: JSON.stringify(memberData),
+			method: 'V5.mobile.member.address.create',
+			openID: urlParam.action.openID,
+			appID: urlParam.action.appID,
+			addressInfo: JSON.stringify(addressInfo),
 		}
 		// hwGetJsonp(apiurl + 'wxMember', Object.assign({},data))
-		hwPost(apiurl + 'platMemberAdd', Object.assign(data,configjson))
+		hwPost(apiurl + 'memberAddressCreate', Object.assign(data,configjson))
 			.then(data => {
 				resolve(data)
 			})
 	});
 }
+// store.setMemberAddress = (memberData) => {
+// 	// if (!objdata) {objdata = {}}
+// 	return new Promise(function(resolve, reject) {
+// 		let data = {
+// 			method: 'V5.mobile.platMember.add',
+// 			memberData: JSON.stringify(memberData),
+// 		}
+// 		// hwGetJsonp(apiurl + 'wxMember', Object.assign({},data))
+// 		hwPost(apiurl + 'platMemberAdd', Object.assign(data,configjson))
+// 			.then(data => {
+// 				resolve(data)
+// 			})
+// 	});
+// }
 /*
 	地址code获取
 */

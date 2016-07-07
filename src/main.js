@@ -32,7 +32,6 @@ if(location.host.match('192.168')||location.host.match('127.0.0.1')||location.ho
 // install router
 Vue.use(Router)
 Vue.use(VueAnimatedList)
-
 // register filters globally
 Vue.filter('fromNow', fromNow)
 Vue.filter('domain', domain)

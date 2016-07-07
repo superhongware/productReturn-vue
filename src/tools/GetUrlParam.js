@@ -1,7 +1,7 @@
-import {Base64} from 'js-base64';
+import {Base64} from 'js-base64'
 var UrlParam=GetUrlParam();
 if (UrlParam.action) {
-  UrlParam.action = JSON.parse(decodeURIComponent(Base64.decode(UrlParam.action)));
+  UrlParam.action = JSON.parse(Base64.decode(decodeURIComponent(UrlParam.action)));
   // console.log(UrlParam.action)
 
 } else {
