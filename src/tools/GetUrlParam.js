@@ -1,9 +1,16 @@
 import {Base64} from 'js-base64';
 var UrlParam=GetUrlParam();
 if (UrlParam.action) {
-  UrlParam.action = JSON.parse(decodeURIComponent(Base64.decode(UrlParam.action)));
-  // console.log(UrlParam.action)
-
+    UrlParam.action = JSON.parse(unescape(Base64.decode(UrlParam.action)));
+    if(UrlParam.action.couponName){
+    	    var couponName=UrlParam.action.couponName;
+    	    if(couponName.indexOf('%')>0){
+    	       	couponName=couponName.substr(0,couponName.indexOf('%'))
+    	       	console.log(couponName)
+    	    }
+    	   UrlParam.action.couponName=Base64.decode(couponName)
+    }
+  
 } else {
   alert("您打开的地址有误！");
   throw "cw";

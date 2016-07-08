@@ -97,8 +97,7 @@
 				this.$route.router.go({
 					name: 'qrbacode',
 					params: {
-						code: this.couponInfo.couponNum,
-						name: this.couponInfo.couponName
+						code: this.couponInfo.couponNum+','+escape(this.couponInfo.couponName)
 					}
 				})
 			}
