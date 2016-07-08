@@ -1,25 +1,13 @@
 // import Firebase from 'firebase'
-import {
-	EventEmitter
-} from 'events'
-import {
-	Promise
-} from 'es6-promise'
-import {
-	hwGetJsonp
-} from './tools/HW_SuperApi'
-import {
-	UrlParam
-} from './tools/GetUrlParam'
+import { EventEmitter } from 'events'
+import { Promise } from 'es6-promise'
+import { hwGetJsonp, hwPost } from './tools/HW_SuperApi'
+import { UrlParam } from './tools/GetUrlParam'
+import config from './config'
 
-// const devapiurl='http://swapi.sandbox.hongware.com'
 // const api = new Firebase('https://hacker-news.firebaseio.com/v0')
-//const devapiurl='http://sandbox.swapi.hongware.com'
-//const devapiurl='http://sandbox.o2o.swapi.hongware.com/'
-//const apiurl=devapiurl+'/openApi/dyncHongware/mobile/'
-const apiurl="http://"+window.location.host+'/openApi/dyncHongware/mobile/';
+let apiurl = config.apiurl+'/openApi/dyncHongware/mobile/';
 
-//const apiurl = 'http://192.168.50.216:8089/openApi/dyncHongware/mobile/'
 const itemsCache = Object.create(null)
 const store = new EventEmitter()
 const storiesPerPage = store.storiesPerPage = 30
@@ -200,5 +188,130 @@ store.CouponInitialization = () => {
 				resolve(data)
 			})
 
+	});
+}
+
+
+/*
+	发送验证码
+*/
+store.sendvcode = (mobilePhone) => {
+	// if (!objdata) {objdata = {}}
+	return new Promise(function(resolve, reject) {
+		let data = {
+			method: 'V5.mobile.wx.code.send',
+			orgCode: urlParam.action.orgCode,
+			openID: urlParam.action.openID,
+			appID: urlParam.action.appID,
+			mobilePhone: mobilePhone,
+		}
+		hwGetJsonp(apiurl + 'wxCodeSend', Object.assign({},data))
+			.then(data => {
+				resolve(data)
+			})
+	});
+}
+/*
+	用户注册
+*/
+store.register = (mobilePhone) => {
+	// if (!objdata) {objdata = {}}
+	return new Promise(function(resolve, reject) {
+		let data = {
+			method: 'V5.mobile.wx.member.create',
+			orgCode: 'zk',
+			openID: urlParam.action.openID,
+			appID: urlParam.action.appID,
+			mobilePhone: mobilePhone,
+		}
+		// hwGetJsonp(apiurl + 'wxMember', Object.assign({},data))
+		hwPost(apiurl + 'wxMemberCreate', Object.assign({},data))
+			.then(data => {
+				resolve(data)
+			})
+	});
+}
+/*
+	用户地址列表获取
+*/
+store.getMemberAddress = (mobilePhone) => {
+	// if (!objdata) {objdata = {}}
+	return new Promise(function(resolve, reject) {
+		let data = {
+			method: 'V5.mobile.member.address.search',
+			orgCode: 'zk',
+			openID: urlParam.action.openID,
+			appID: urlParam.action.appID,
+		}
+		// hwGetJsonp(apiurl + 'wxMember', Object.assign({},data))
+		hwGetJsonp(apiurl + 'memberAddressSearch', Object.assign(data,configjson))
+			.then(data => {
+				resolve(data)
+			})
+	});
+}
+// store.getMemberAddress = (mobilePhone) => {
+// 	// if (!objdata) {objdata = {}}
+// 	return new Promise(function(resolve, reject) {
+// 		let data = {
+// 			method: 'V5.mobile.channelMember.get',
+// 			mobilePhone: mobilePhone,
+// 		}
+// 		// hwGetJsonp(apiurl + 'wxMember', Object.assign({},data))
+// 		hwGetJsonp(apiurl + 'channelMemberGet', Object.assign(data,configjson))
+// 			.then(data => {
+// 				resolve(data)
+// 			})
+// 	});
+// }
+/*
+	用户地址新增
+*/
+store.addMemberAddress = (addressInfo) => {
+	// if (!objdata) {objdata = {}}
+	return new Promise(function(resolve, reject) {
+		let data = {
+			method: 'V5.mobile.member.address.create',
+			openID: urlParam.action.openID,
+			appID: urlParam.action.appID,
+			addressInfo: JSON.stringify(addressInfo),
+		}
+		// hwGetJsonp(apiurl + 'wxMember', Object.assign({},data))
+		hwPost(apiurl + 'memberAddressCreate', Object.assign(data,configjson))
+			.then(data => {
+				resolve(data)
+			})
+	});
+}
+// store.setMemberAddress = (memberData) => {
+// 	// if (!objdata) {objdata = {}}
+// 	return new Promise(function(resolve, reject) {
+// 		let data = {
+// 			method: 'V5.mobile.platMember.add',
+// 			memberData: JSON.stringify(memberData),
+// 		}
+// 		// hwGetJsonp(apiurl + 'wxMember', Object.assign({},data))
+// 		hwPost(apiurl + 'platMemberAdd', Object.assign(data,configjson))
+// 			.then(data => {
+// 				resolve(data)
+// 			})
+// 	});
+// }
+/*
+	地址code获取
+*/
+store.getAddressCode = () => {
+	// if (!objdata) {objdata = {}}
+	return new Promise(function(resolve, reject) {
+		let data = {
+			method: 'V5.mobile.areas.get',
+			orgCode: 'work',
+			id: 1,
+		}
+		// hwGetJsonp(apiurl + 'wxMember', Object.assign({},data))
+		hwPost(apiurl + 'areasGet', Object.assign({},data))
+			.then(data => {
+				resolve(data)
+			})
 	});
 }

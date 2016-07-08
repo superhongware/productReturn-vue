@@ -33,6 +33,9 @@
 	import {
 		UrlParam
 	} from 'src/tools/GetUrlParam'
+	import {
+		Base64
+	} from 'js-base64'
 	const urlParam = UrlParam();
 
 	export default {
@@ -55,14 +58,14 @@
 		},
 		route: {
 			data: function(transition) {
-				var code,name;
-				var params=transition.to.params.code
-				if(params.indexOf(',')>0){
-					code=params.split(',')[0]
-					name=unescape(params.split(',')[1])
-				}else{
-					code=params;
-					name=urlParam.action.couponName
+				var code, name;
+				var params = transition.to.params.code
+				if (params.indexOf(',') > 0) {
+					code = params.split(',')[0]
+					name = unescape(params.split(',')[1])
+				} else {
+					code = params;
+					name = Base64.decode(urlParam.action.couponName)
 				}
 				return {
 					code: code,

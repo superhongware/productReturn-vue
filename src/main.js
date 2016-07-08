@@ -10,6 +10,8 @@ import evaluationView from './views/evaluation'
 import couponDetailView from './views/couponView/couponDetail'
 import mycouponView from './views/mycouponView'
 import qrbacodeView from './views/qrbacodeView'
+import registerView from './views/registerView/registerView'
+import addressListView from './views/addressListView/addressListView'
 
 // import returnPdView0 from './views/returnPdView0'
 import tryscroller from './views/try/scroller.vue'
@@ -30,7 +32,6 @@ if(location.host.match('192.168')||location.host.match('127.0.0.1')||location.ho
 // install router
 Vue.use(Router)
 Vue.use(VueAnimatedList)
-
 // register filters globally
 Vue.filter('fromNow', fromNow)
 Vue.filter('domain', domain)
@@ -79,10 +80,13 @@ router.map({
   // },
   '/try':{
     component:tryscroller
-  }
-  // '/coupon':{
-  //   component:couponView
-  // }
+  },
+  '/register':{
+    component:registerView
+  },
+  '/addressList':{
+    component:addressListView
+  },
 })
 
 router.beforeEach(function () {

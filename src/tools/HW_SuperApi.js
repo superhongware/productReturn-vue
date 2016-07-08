@@ -1,6 +1,8 @@
 import {Base64} from 'js-base64';
 import $ from 'jquery'
 import md5 from "md5";
+import config from "../config";
+
 const base64 = Base64.encode;
 
 export default function hwSuperApi(maindata){
@@ -8,10 +10,8 @@ export default function hwSuperApi(maindata){
     throw "接口缺少method参数";
   }
   let data = {
-    nick: 'V5mobile',
-    name: 'V5mobile',
-//  nick: '欧少辉',
-//  name: '欧少辉',
+    nick: config.nick,
+    name: config.name,
     format: 'json',
     timestamp: parseInt(new Date().getTime()/1000).toString(),
   };
@@ -27,5 +27,15 @@ export function hwGetJsonp(url,maindata){
     data: hwSuperApi(maindata),
     dataType: 'jsonp',
     jsonp: 'callBack'
+  });
+}
+
+export function hwPost(url,maindata){
+  return $.ajax({
+    url: url,
+    method: 'POST',
+    data: hwSuperApi(maindata),
+    dataType: 'json',
+    async: true,
   });
 }
