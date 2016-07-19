@@ -68,7 +68,7 @@ router.map({
     component:mycouponView,
      name: 'mycoupon',
   },
-  '/qrbacode/:code/:name':{
+  '/qrbacode/:code':{
     component:qrbacodeView,
     name: 'qrbacode',
   },

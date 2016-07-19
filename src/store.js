@@ -8,7 +8,6 @@ import config from './config'
 // const api = new Firebase('https://hacker-news.firebaseio.com/v0')
 let apiurl = config.apiurl+'/openApi/dyncHongware/mobile/';
 
-
 const itemsCache = Object.create(null)
 const store = new EventEmitter()
 const storiesPerPage = store.storiesPerPage = 30
@@ -115,7 +114,8 @@ store.CommentInfoGet = () => {
 	return new Promise(function(resolve, reject) {
 		let data = {
 			method: 'V5.mobile.order.comment.info.get',
-			orderNumber: urlParam.action.orderNumber
+			orderNumber: urlParam.action.orderNumber,
+			commentType:urlParam.action.commentType||'1',
 		}
 		hwGetJsonp(apiurl + 'OrderCommentInfoGet', Object.assign(data, configjson))
 			.then(data => {
@@ -129,7 +129,7 @@ store.CommentAdd = (CommentData) => {
 		let data = {
 			method: 'V5.mobile.order.Comment.add',
 			orderNumber: urlParam.action.orderNumber,
-			commentType:urlParam.action.commentType,
+			commentType:urlParam.action.commentType||'1',
 			commentData:CommentData
 		}
 		hwGetJsonp(apiurl + 'OrderCommentAdd', Object.assign(data, configjson))
