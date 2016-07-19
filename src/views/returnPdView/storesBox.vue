@@ -13,6 +13,12 @@
           </span>
       </div>
       <p class="storeadress">{{store.address}}</p>
+      <div class="promotions">
+        <!-- {{store.promotions | json}} -->
+        <p class="promotion" v-for="promotion in store.promotions">
+          <span class="ptype" :style="'background-color:'+colors[promotion.promotionType]">{{promotion.promotionType}}</span>{{promotion.promotionName}}
+        </p>
+      </div>
   </li>
 </ul>
 </template>
@@ -23,6 +29,23 @@
 export default {
   props:{
     stores:Array,
+  },
+  data(){
+    return {
+      colors:{
+        '惠': '#FF3300',
+        '免': '#EA9E00',
+        '折': '#3366CC',
+        '送': '#70BC46',
+        '减': '#6699FF',
+        '特': '#FFC62F',
+        '返': '#EF7272',
+        '团': '#FF6600',
+        '劵': '#3AC78F',
+        '赠': '#D20000',
+        '新': '#FF9966',
+      }
+    }
   },
   components: {
     // Scroller,
@@ -64,8 +87,12 @@ export default {
   background-color:#fff;
   border-bottom:1px solid #ddd;
   width:100%;
-  height:70px;
+  // height:70px;
   padding:10px;
+  .flexBox{
+    height: 25px;
+    overflow: hidden;
+  }
 }
 .rangetext{
   text-align:right;
@@ -84,4 +111,32 @@ export default {
   color:#666;
   line-height:25px;
 }
+.promotions{
+
+}
+.promotion{
+  font-size:13px;
+  line-height: 17px;
+  width: 100%;
+  height: 16px;
+  margin: 3px 0;
+  padding-left:20px;
+  overflow: hidden;
+  position:relative;
+  color:#999;
+  .ptype{
+    width:16px;
+    height:16px;
+    line-height:16px;
+    position:absolute;
+    left:0px;
+    top:0px;
+    text-align:center;
+    color: #fff;
+    font-size:12px;
+    border-radius:2px;
+    display: inline-block;
+  }
+}
+
 </style>

@@ -73,10 +73,10 @@ import addressData from '../../tools/address.json'
 import {UrlParam} from '../../tools/GetUrlParam'
 const urlParam = UrlParam();
 import {Base64}from 'js-base64'
-const ma = Base64.encode(JSON.stringify({orgCode: "o2o", callbackUrl: 'http://192.168.50.149:8080/?action=123#!/addressList', openID:"008", appID:"xxxx"}))
+// const ma = Base64.encode(JSON.stringify({orgCode: "o2o", callbackUrl: 'http://192.168.50.149:8080/?action=123#!/addressList', openID:"008", appID:"xxxx"}))
 // eyJvcmdDb2RlIjoibzJvIiwiY2FsbGJhY2tVcmwiOiJodHRwOi8vMTkyLjE2OC41MC4xNDk6ODA4MC8/YWN0aW9uPTEyMyMhL3JlZ2llc3QiLCJvcGVuSUQiOiJhMDAwMDEiLCJhcHBJRCI6Inh4eHgifQ==
 // console.log(ma);
-console.log(location.origin+'/?action='+ma+'#!/addressList');
+// console.log(location.origin+'/?action='+ma+'#!/addressList');
 
 export default {
     components: {

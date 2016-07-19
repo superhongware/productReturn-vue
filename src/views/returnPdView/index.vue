@@ -65,8 +65,8 @@
         <div class="fadepage" v-show='!showstore' transition="slideRight">
           <Scroller lock-x height='scrollerHeight' :style='{height:scrollerHeight}' >
             <!-- type不同  提示文字不同，二维码内容不同  9是优惠券信息，其余是订单信息,   注：type为5  二维码为 订单号,code  -->
-            <qrcode-box v-if="urlParam.action.type!=9" title="订单编号" :title-code="urlParam.action.orderNumber" :qrcode="urlParam.action.orderNumber+(urlParam.action.type==5?','+urlParam.action.code:'')" tips="此二维码用于门店快速找到您的订单"></qrcode-box>
-            <qrcode-box v-if="urlParam.action.type==9" title="优惠券编号" :title-code="urlParam.action.code" :qrcode="urlParam.action.code" tips="此二维码用于门店快速验证您的优惠券"></qrcode-box>
+            <qrcode-box v-if="urlParam.action.type!=9" title="订单编号" :title-code="urlParam.action.orderNumber" :qrcode="json2string(urlParam.action)" tips="此二维码用于门店快速找到您的订单"></qrcode-box>
+            <qrcode-box v-if="urlParam.action.type==9" title="优惠券编号" :title-code="urlParam.action.code" :qrcode="json2string(urlParam.action)" tips="此二维码用于门店快速验证您的优惠券"></qrcode-box>
           </Scroller>
         </div>
 
@@ -94,6 +94,9 @@ import {
     getDrivingRoute,
     getAddressLngLat
 } from 'src/tools/HW_BmapApi'
+
+// const ma = Base64.encode(JSON.stringify({orgCode: "o2o", orderNumber: "144982180517251", type: "2", code: "asdadda"}))
+// console.log(location.origin+'/?action='+ma+'#!/returnProducts');
 
 // console.log(Base64.encode(JSON.stringify({orderNumber: "E20160422102448098918415", orgCode: "work", type: "9", code: "asdadda"})));
 // console.log(Base64.encode(JSON.stringify({orderNumber: "E20160422102448098918415", orgCode: "work", type: "2", code: "asdadda"})));
@@ -123,8 +126,10 @@ export default {
         return {
             stores: [],
             orderaddress: '',
+            orderInfo: null,
             urlParam: {},
             ranges: [],
+            storecondition:null,//当前门店是哪个城市的
             loading:{
               show:true,
               text:'加载中...'
@@ -157,10 +162,27 @@ export default {
                 let [ orderdata, urlParam] = data
                 document.title = getTitleName(urlParam)
                 // console.log('returndata',orderdata.order.logisticInfo.address);
-                self.getmaininfo();
+                setTimeout(()=>{
+                  self.getmaininfo()
+                  .then(()=>{
+                    // 取订单地址经纬度
+                    getAddressLngLat(self.orderaddress)
+                    .then(orderLL=>{
+                      // 存订单地址经纬度
+                      self.orderLngLat=orderLL
+                      // 计算订单地址与门店距离
+                      self.setRange(self.orderLngLat)
+                      // if(self.showmap=true){
+                      //   self.changeMapList(orderLL)
+                      // }
+                    })
+                  });
+                })
                 return {
                     // stores: stores,
                     orderaddress: orderdata.order.logisticInfo.address,
+                    orderInfo: orderdata.order,
+                    storecondition: orderdata.order.logisticInfo.province + ',' + orderdata.order.logisticInfo.city,
                     urlParam: urlParam,
                     loading:{
                       show:false,
@@ -178,42 +200,42 @@ export default {
         getmaininfo(){
           // console.log('加载门店信息');
           let self=this
-          this.$log();
-          //取store信息
-          store.fetchStors()
-          .then(stores=>{
-            //默认距离设置9999999  storesBox中会直接显示“未获取距离“  并且排序会排在最后面
-            stores.map(store=>store.range=9999999);
-            //存门店信息
-            self.stores=stores
-            //更新scroller
-            setTimeout(()=>{
-              self.$nextTick(()=>{
-                self.$refs.scroller.reset()
-              })
-            },stores.length*150)
-            // console.log('门店信息搞定');
-            //取门店地址经纬度
-            return Promise.all(self.stores.map(store => getAddressLngLat(store.address)))
-          })
-          .then(storeLLs=>{
-            // 存门店经纬度
-            storeLLs.map((storeLL,i)=>self.stores[i].point=storeLL)
-            // console.log('门店经纬度搞定',self.orderaddress);
-            // 取订单地址经纬度
-            return getAddressLngLat(self.orderaddress)
-          })
-          .then(orderLL=>{
-            // 存订单地址经纬度
-            self.orderLngLat=orderLL
-            // console.log('订单经纬度搞定');
-            // 计算订单地址与门店距离
-            self.setRange(self.orderLngLat)
-            // if(self.showmap=true){
-            //   self.changeMapList(orderLL)
-            // }
+          return new Promise(function(resolve, reject) {
+            //取store信息
+            store.fetchStors({
+              type: 'store',
+              // condition:  '湖南, 长沙'
+              condition: self.storecondition,
+            })
+            .then(stores=>{
+              //默认距离设置9999999  storesBox中会直接显示“未获取距离“  并且排序会排在最后面
+              // console.log('$$$$',stores);
+              stores.map(store=>store.range=9999999);
+              //存门店信息
+              self.stores=stores
+              //更新scroller
+              setTimeout(()=>{
+                self.$nextTick(()=>{
+                  self.$refs.scroller.reset()
+                })
+              },stores.length*150)
+              // console.log('门店信息搞定');
+              //取门店地址经纬度
+              return Promise.all(self.stores.map(store => getAddressLngLat(store.address)))
+            })
+            .then(storeLLs=>{
+              // 存门店经纬度
+              storeLLs.map((storeLL,i)=>self.stores[i].point=storeLL)
+              // console.log('@#$%^');
+              // console.log('门店经纬度搞定',self.orderaddress);
+              resolve()
+            })
+            .catch(msg=>{
+              reject(msg)
+            })
           })
         },
+        //更新地图的点
         changeMapList(){
           let self = this
           this.showmap=!this.showmap
@@ -234,14 +256,41 @@ export default {
                     .then(r => {
                         self.loading.show = false
                         self.loading.text = ''
-                        // console.log(r.address.city+r.address.district+r.address.street+r.address.street_number)
                         self.nowaddress=r.address.city+r.address.district+r.address.street+r.address.street_number
-                        self.setRange(r.point)
+                        let newstorecondition = r.address.province.replace('市', '') + ',' + r.address.city
+                        self.checkStoreconditionAndSetrange(newstorecondition, r.point)
                     })
             } else if (a === 'menu2' && self.showMyLocation === true) {
                 self.showMyLocation = false
-                self.setRange(self.orderLngLat)
+                let newstorecondition = self.orderInfo.logisticInfo.province + ',' + self.orderInfo.logisticInfo.city
+                self.checkStoreconditionAndSetrange(newstorecondition, self.orderLngLat)
             }
+        },
+        checkStoreconditionAndSetrange(newstorecondition, startPoint) {
+          let self = this
+          //加.split(',')[1] 是为了直接对比市 订单中直辖市是 上海   百度地图是 上海市  不一样  会导致接口重复调用
+          if(self.storecondition.split(',')[1] !== newstorecondition.split(',')[1]){
+          // if(self.storecondition !== newstorecondition){
+            self.storecondition = newstorecondition
+            //当前位置与订单位置非同一城市  要重新获取门店数据  再计算距离
+            self.getmaininfo()
+            .then(()=>{
+              // console.log('@@@',self.storecondition,newstorecondition);
+              // 取订单地址经纬度
+              getAddressLngLat(self.orderaddress)
+              .then(orderLL=>{
+                // 存订单地址经纬度
+                self.orderLngLat=orderLL
+                // 计算订单地址与门店距离
+                self.setRange(startPoint)
+              })
+            },msg=>{
+              console.error('###',msg);
+            })
+
+          }else{
+            self.setRange(startPoint)
+          }
         },
         setRange(start) {
             let self = this
@@ -314,6 +363,10 @@ export default {
           let label = new BMap.Label(text,{offset:new BMap.Size(-10,-20)});
           marker.setLabel(label)
           map.addOverlay(marker);
+        },
+        json2string(obj){
+          console.log(JSON.stringify(obj));
+          return JSON.stringify(obj);
         }
     },
 }

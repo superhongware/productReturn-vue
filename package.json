@@ -43,6 +43,7 @@
     "jsbarcode": "^3.3.14",
     "json-loader": "^0.5.4",
     "md5": "^2.1.0",
+    "qrcode-generator": "^1.0.0",
     "qrcode-js": "0.0.2",
     "vue": "^1.0.8",
     "vue-animate": "0.0.4",

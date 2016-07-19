@@ -24,7 +24,7 @@ const configjson = {
 //订单数据
 let orderDate = []
 	//门店数据
-let storeDate = []
+let storeDate = {}
 let topStoryIds = []
 
 export default store
@@ -35,23 +35,48 @@ store.fetchUrlParma = () => {
 	return Promise.resolve(urlParam);
 }
 
-//取门店信息
-store.fetchStors = () => {
-	if (storeDate.length > 0) {
-		return Promise.resolve(storeDate)
+/**
+ * @summary 取门店信息
+ * @locus Anywhere
+ * @method fetchStors
+ * @param {Object} objdata 数据对象
+ * @param {String} objdata.type 查询类型，store为附近门店，order为我的订单
+ * @param {String} objdata.condition 当查询类型为“store”值为省市，格式（湖南省，永州市），当查询类型为“order”值为订单编号
+ */
+store.fetchStors = (objdata) => {
+	// console.log('****',objdata.condition);
+	if (storeDate[objdata.condition]) {
+		return Promise.resolve(storeDate[objdata.condition])
 	} else {
 		return new Promise(function(resolve, reject) {
 			let data = {
-				method: 'V5.mobile.allocate.warehouse.search',
+				method: 'V5.mobile.hfive.warehouse',
 			}
-			let storesP = hwGetJsonp(apiurl + 'warehouseSearch', Object.assign(data, configjson))
+			let storesP = hwGetJsonp(apiurl + 'hfiveWarehouse', Object.assign(data, configjson, objdata))
 				.then(data => {
-					storeDate = data.stores;
+					storeDate[objdata.condition]=data.stores;
+					// storeDate = data.stores;
 					resolve(data.stores)
 				})
 		})
 	}
 }
+// store.fetchStors = () => {
+// 	if (storeDate.length > 0) {
+// 		return Promise.resolve(storeDate)
+// 	} else {
+// 		return new Promise(function(resolve, reject) {
+// 			let data = {
+// 				method: 'V5.mobile.allocate.warehouse.search',
+// 			}
+// 			let storesP = hwGetJsonp(apiurl + 'warehouseSearch', Object.assign(data, configjson))
+// 				.then(data => {
+// 					storeDate = data.stores;
+// 					resolve(data.stores)
+// 				})
+// 		})
+// 	}
+// }
 
 //取门店信息
 store.fetchStors2 = () => {
