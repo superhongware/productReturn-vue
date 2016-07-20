@@ -73,7 +73,9 @@ import addressData from '../../tools/address.json'
 import {UrlParam} from '../../tools/GetUrlParam'
 const urlParam = UrlParam();
 import {Base64}from 'js-base64'
-// const ma = Base64.encode(JSON.stringify({orgCode: "o2o", callbackUrl: 'http://192.168.50.149:8080/?action=123#!/addressList', openID:"008", appID:"xxxx"}))
+// let cc='eyJjaXR5Ijoi5YyX5Lqs5biCIiwiZGlzdHJpY3QiOiLkuJzln47ljLoiLCJtZW1iZXJBZGRyZXNzIjoiIiwibW9iaWxlUGhvbmUiOiIxNTMxMTExMTExMSIsIm5hbWUiOiIxMjMiLCJwcm92aW5jZSI6IuWMl%2BS6rCJ9'
+// console.log(JSON.parse(Base64.decode(decodeURIComponent(cc))));
+// const ma = Base64.encode(JSON.stringify({orgCode: "o2o", callbackUrl: 'http://192.168.50.149:8080/?action=123&asd=asd#!/addressList', openID:"111", appID:"xxxx"}))
 // eyJvcmdDb2RlIjoibzJvIiwiY2FsbGJhY2tVcmwiOiJodHRwOi8vMTkyLjE2OC41MC4xNDk6ODA4MC8/YWN0aW9uPTEyMyMhL3JlZ2llc3QiLCJvcGVuSUQiOiJhMDAwMDEiLCJhcHBJRCI6Inh4eHgifQ==
 // console.log(ma);
 // console.log(location.origin+'/?action='+ma+'#!/addressList');
@@ -118,7 +120,7 @@ export default {
     },
     route: {
         data({to: {query}}) {
-            console.log(query)
+            // console.log(query)
             let self = this
             // if(!urlParam.action.orgCode){
             //   self.showAlert('orgCode缺失');
@@ -135,7 +137,7 @@ export default {
                 // store.getAddressCode(),
                 store.getMemberAddress(urlParam.action.mobilePhone)
             ]).then((data) => {
-                console.log(data[0]);
+                // console.log(data[0]);
                 if (!data[0].isSuccess) {
                     // data[0] = {
                     //     userName: "老王",
@@ -178,7 +180,7 @@ export default {
         }
     },
     ready: function() {
-        console.log('registerView')
+        // console.log('registerView')
 
     },
     // function addUrlPara(name, value) {
@@ -213,14 +215,30 @@ export default {
               let search = url.split('#')[0].split('?')[1]
               let mainurl = url.split('#')[0].split('?')[0]
 
+              // console.log(mainparam);
+
               let addressname = [address.province, address.city, address.district];
               let placeCode = self.getPlaceValue(addressname);
               address.provinceCode = placeCode[0]
               address.cityCode = placeCode[1]
               address.areaCode = placeCode[2]
-              let resulturl = mainurl + '?action=' + encodeURIComponent(Base64.encode(JSON.stringify(address))) + (hash ? ('#' + hash) : '')
-              // window.location.href = resulturl
-              console.log(resulturl);
+
+              let mainparam={};
+              let urlparam = '';
+              let paramsarr = search.split('&')
+              if(paramsarr[0].match('=')){
+                paramsarr.forEach(param=>{
+                  let mainp = param.split('=')
+                  mainparam[mainp[0]] = mainp[1]
+                })
+              }
+              mainparam.selectAddress = encodeURIComponent(Base64.encode(JSON.stringify(address)))
+              for (let pkey in mainparam){
+                urlparam += pkey + '=' + mainparam[pkey] + '&'
+              }
+              let resulturl = mainurl + '?' + urlparam.slice(0,urlparam.length-1) + (hash ? ('#' + hash) : '')
+              window.location.href = resulturl
+              // console.log(resulturl);
             },
             editAddress(index,address) {
                 let self = this;
@@ -319,7 +337,7 @@ export default {
                 self.closeLoading()
                 if(data.isSuccess === true){
                   self.updateLocalAddress(currentAddress)
-                  console.log(data.isSuccess);
+                  // console.log(data.isSuccess);
                   self.$set('currentAddress.show',false)
                 }else{
                   self.showAlert(data.map.errorMsg)
