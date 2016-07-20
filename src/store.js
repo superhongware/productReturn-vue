@@ -244,7 +244,7 @@ store.register = (mobilePhone) => {
 	return new Promise(function(resolve, reject) {
 		let data = {
 			method: 'V5.mobile.wx.member.create',
-			orgCode: 'zk',
+			orgCode: urlParam.action.orgCode,
 			openID: urlParam.action.openID,
 			appID: urlParam.action.appID,
 			mobilePhone: mobilePhone,
@@ -264,7 +264,7 @@ store.getMemberAddress = (mobilePhone) => {
 	return new Promise(function(resolve, reject) {
 		let data = {
 			method: 'V5.mobile.member.address.search',
-			orgCode: 'zk',
+			orgCode: urlParam.action.orgCode,
 			openID: urlParam.action.openID,
 			appID: urlParam.action.appID,
 		}
