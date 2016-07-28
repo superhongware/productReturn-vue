@@ -79,7 +79,7 @@ import {Base64}from 'js-base64'
 // eyJvcmdDb2RlIjoibzJvIiwiY2FsbGJhY2tVcmwiOiJodHRwOi8vMTkyLjE2OC41MC4xNDk6ODA4MC8/YWN0aW9uPTEyMyMhL3JlZ2llc3QiLCJvcGVuSUQiOiJhMDAwMDEiLCJhcHBJRCI6Inh4eHgifQ==
 // console.log(ma);
 // console.log(location.origin+'/?action='+ma+'#!/addressList');
-
+// console.log(Base64.decode('eyJvcmdDb2RlIjoibzJvIiwiY2FsbGJhY2tVcmwiOiJodHRwOi8vaG9uZ3dlaS5jb21lb25jbG91ZC5uZXQvY3VzdG9taXplL3Nob3AvP3Y9MS4wJm5ncm91dGU9L2NyZWF0ZU9yZGVyIy9jcmVhdGVPcmRlciIsIm9wZW5JRCI6Im9YVjlydUNQaXlIOGZpVnlpREt4R0JMNEZTSGsiLCJhcHBJRCI6Inh4eHgifQ=='));
 export default {
     components: {
         Loading,

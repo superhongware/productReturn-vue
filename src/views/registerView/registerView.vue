@@ -12,12 +12,15 @@
       <x-input
       title="手机号"
       is-type="china-mobile"
-      :show-clear=true
-      :value.sync="phone"></x-input>
+      :show-clear="true"
+      :value.sync="phone"
+      v-ref:chinamobile></x-input>
       <x-input title="验证码" class="weui_vcode" :value.sync="vcode">
-        <x-button slot="right" type="primary" v-if="vcodetime<=0" class="getvcode" @click="getvcode()">发送验证码</x-button>
+        <x-button slot="right" type="primary" v-if="vcodetime<=0&&$refs.chinamobile.valid&&phone!=''" class="getvcode" @click="getvcode()">发送验证码</x-button>
+        <x-button slot="right" type="primary" v-if="vcodetime<=0&&(!$refs.chinamobile.valid||phone=='')" class="getvcode forbidden">发送验证码</x-button>
         <x-button slot="right" type="primary" v-if="vcodetime>0" class="getvcode forbidden">发送验证码({{vcodetime}}s)</x-button>
       </x-input>
+
     </group>
     <box gap="10px 10px">
       <x-button type="primary" class="submitbtn" @click="submitinfo()">提交信息</x-button>
@@ -65,10 +68,18 @@ export default {
     },
 
     data() {
+        //验证码60秒发一次  倒计时记录在localStorage里 防止刷新页面  倒数时间直接刷新
+        let vcodetime = 0;
+        let sendtime = window.localStorage.getItem('timeCutDown')
+        if(sendtime!== null){
+          let dtime = new Date().getTime() - new Date(sendtime).getTime();
+          dtime = 60 - parseInt(dtime/1000);
+          vcodetime = dtime > 0 ? dtime : 0;
+        }
         return {
           phone: '',
           vcode: '',
-          vcodetime: 0,
+          vcodetime: vcodetime,
           originvcode:null,
           alertinfo:{
             show: false,
@@ -103,13 +114,16 @@ export default {
     //     }
     // },
     ready: function() {
-      console.log('registerView')
+      let self = this
       if(!urlParam.action.orgCode){
         self.showAlert('orgCode缺失');
       }else if(!urlParam.action.openID){
         self.showAlert('openID缺失');
       }else if(!urlParam.action.appID){
         self.showAlert('appID缺失');
+      }
+      if(self.vcodetime>0){
+        self.timeCutDown();
       }
     },
     methods: {
@@ -152,6 +166,7 @@ export default {
         alertcallback(){},
         timeCutDownStart(){
           let self = this
+          window.localStorage.setItem('timeCutDown',new Date())
           self.$set('vcodetime',60)
           self.timeCutDown()
         },
@@ -166,12 +181,17 @@ export default {
         },
         submitinfo(){
           let self = this
+          if(!self.$refs.chinamobile.valid || self.phone===''){
+            self.showAlert('请填写正确的手机号')
+            return
+          }
           if(!this.originvcode || this.originvcode !== this.vcode){
             self.showAlert('验证码不正确')
             return
           }
+          console.log(urlParam.action.callbackUrl);
           self.openLoading()
-          store.sendvcode(self.phone)
+          store.register(self.phone)
           .then(data=>{
             console.log('cg',data);
             self.closeLoading()
