@@ -66,9 +66,9 @@ import value2name from '../../filters/value2name'
 import name2value from '../../filters/name2value'
 
 // 正式用地址代码
-// import addressData from '../../tools/address.json'
+import addressData from '../../tools/address.json'
 // 测试用代码
-import addressData from '../../tools/address0.js'
+// import addressData from '../../tools/address0.js'
 
 import {UrlParam} from '../../tools/GetUrlParam'
 const urlParam = UrlParam();
