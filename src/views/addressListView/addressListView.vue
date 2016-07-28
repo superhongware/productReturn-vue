@@ -66,9 +66,9 @@ import value2name from '../../filters/value2name'
 import name2value from '../../filters/name2value'
 
 // 正式用地址代码
-import addressData from '../../tools/address.json'
+// import addressData from '../../tools/address.json'
 // 测试用代码
-// import addressData from '../../tools/address0.js'
+import addressData from '../../tools/address0.js'
 
 import {UrlParam} from '../../tools/GetUrlParam'
 const urlParam = UrlParam();
@@ -79,7 +79,13 @@ import {Base64}from 'js-base64'
 // eyJvcmdDb2RlIjoibzJvIiwiY2FsbGJhY2tVcmwiOiJodHRwOi8vMTkyLjE2OC41MC4xNDk6ODA4MC8/YWN0aW9uPTEyMyMhL3JlZ2llc3QiLCJvcGVuSUQiOiJhMDAwMDEiLCJhcHBJRCI6Inh4eHgifQ==
 // console.log(ma);
 // console.log(location.origin+'/?action='+ma+'#!/addressList');
-// console.log(Base64.decode('eyJvcmdDb2RlIjoibzJvIiwiY2FsbGJhY2tVcmwiOiJodHRwOi8vaG9uZ3dlaS5jb21lb25jbG91ZC5uZXQvY3VzdG9taXplL3Nob3AvP3Y9MS4wJm5ncm91dGU9L2NyZWF0ZU9yZGVyIy9jcmVhdGVPcmRlciIsIm9wZW5JRCI6Im9YVjlydUNQaXlIOGZpVnlpREt4R0JMNEZTSGsiLCJhcHBJRCI6Inh4eHgifQ=='));
+// http://swapi.hongware.com/hfive/2015/membercenter.html?param=b3BlbklEPW9YVjlydUxoZ0hORTBlLXFLMHdYYy11Z3RhWkEmYXBwSUQ9d3g2ZTBjZGJiZWYzOWFjNGZj
+// http://sandbox.o2o.swapi.hongware.com/hfive/2015/membercenter.html?param=b3BlbklEPW9YVjlydUxoZ0hORTBlLXFLMHdYYy11Z3RhWkEmYXBwSUQ9eHh4eA==
+// http://sandbox.o2o.swapi.hongware.com/hfive/2016/store.html?action=eyJvcmdDb2RlIjoibzJvIiwiY2FsbGJhY2tVcmwiOiJodHRwOi8vaG9uZ3dlaS5jb21lb25jbG91ZC5uZXQvY3VzdG9taXplL3Nob3AvP3Y9MS4wJm5ncm91dGU9L2NyZWF0ZU9yZGVyIy9jcmVhdGVPcmRlciIsIm9wZW5JRCI6Im9YVjlydUxoZ0hORTBlLXFLMHdYYy11Z3RhWkEiLCJhcHBJRCI6Inh4eHgifQ==#!/returnProducts
+// console.log(Base64.decode('b3BlbklEPW9YVjlydUxoZ0hORTBlLXFLMHdYYy11Z3RhWkEmYXBwSUQ9d3g2ZTBjZGJiZWYzOWFjNGZj'));
+// console.log(Base64.decode('b3BlbklEPW9YVjlydUxoZ0hORTBlLXFLMHdYYy11Z3RhWkEmYXBwSUQ9eHh4eA=='));
+// console.log(Base64.decode('eyJvcmdDb2RlIjoibzJvIiwiY2FsbGJhY2tVcmwiOiJodHRwOi8vaG9uZ3dlaS5jb21lb25jbG91ZC5uZXQvY3VzdG9taXplL3Nob3AvP3Y9MS4wJm5ncm91dGU9L2NyZWF0ZU9yZGVyIy9jcmVhdGVPcmRlciIsIm9wZW5JRCI6Im9YVjlydUxoZ0hORTBlLXFLMHdYYy11Z3RhWkEiLCJhcHBJRCI6Inh4eHgifQ=='));
+
 export default {
     components: {
         Loading,
@@ -243,6 +249,9 @@ export default {
             editAddress(index,address) {
                 let self = this;
                 if (address) {
+                    // 编辑地址
+                    self.showAlert('暂不支持编辑地址')
+                    return
                     let addressname = [];
                     if(address.province&&address.city&&address.district){
                       addressname = [address.province, address.city, address.district];
@@ -330,9 +339,12 @@ export default {
               })
             },
             runAddAddress(currentAddress){
+              console.log(currentAddress);
               let self = this
               self.openLoading('添加地址...')
-              store.addMemberAddress(self.getCurrentAddress(currentAddress))
+              let addMemberAddressdata = self.getCurrentAddress(currentAddress);
+              addMemberAddressdata.address = currentAddress.address;
+              store.addMemberAddress(addMemberAddressdata)
               .then(data=>{
                 self.closeLoading()
                 if(data.isSuccess === true){
