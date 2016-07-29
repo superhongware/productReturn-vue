@@ -12,7 +12,7 @@ const itemsCache = Object.create(null)
 const store = new EventEmitter()
 const storiesPerPage = store.storiesPerPage = 30
 
-// console.log(UrlParam)
+// console.log('UrlParam')
 const urlParam = UrlParam();
 const configjson = {
 	orgCode: urlParam.action.orgCode,

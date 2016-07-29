@@ -97,16 +97,7 @@ import {
 
 // const ma = Base64.encode(JSON.stringify({orgCode: "o2o", orderNumber: "144982180517251", type: "2", code: "asdadda"}))
 // console.log(location.origin+'/?action='+ma+'#!/returnProducts');
-
-// console.log(Base64.encode(JSON.stringify({orderNumber: "E20160422102448098918415", orgCode: "work", type: "9", code: "asdadda"})));
-// console.log(Base64.encode(JSON.stringify({orderNumber: "E20160422102448098918415", orgCode: "work", type: "2", code: "asdadda"})));
-// console.log(Base64.encode(JSON.stringify({orderNumber: "E20160422102448098918415", orgCode: "work", type: "6", code: "asdadda"})));
-// console.log(Base64.encode(JSON.stringify({orderNumber: "E20160422102448098918415", orgCode: "work", type: "5", code: "asdadda"})));
-// eyJvcmRlck51bWJlciI6IkUyMDE2MDQyMjEwMjQ0ODA5ODkxODQxNSIsIm9yZ0NvZGUiOiJ3b3JrIiwidHlwZSI6IjkiLCJjb2RlIjoiYXNkYWRkYSJ9
-// eyJvcmRlck51bWJlciI6IkUyMDE2MDQyMjEwMjQ0ODA5ODkxODQxNSIsIm9yZ0NvZGUiOiJ3b3JrIiwidHlwZSI6IjIiLCJjb2RlIjoiYXNkYWRkYSJ9
-// eyJvcmRlck51bWJlciI6IkUyMDE2MDQyMjEwMjQ0ODA5ODkxODQxNSIsIm9yZ0NvZGUiOiJ3b3JrIiwidHlwZSI6IjYiLCJjb2RlIjoiYXNkYWRkYSJ9
-// eyJvcmRlck51bWJlciI6IkUyMDE2MDQyMjEwMjQ0ODA5ODkxODQxNSIsIm9yZ0NvZGUiOiJ3b3JrIiwidHlwZSI6IjUiLCJjb2RlIjoiYXNkYWRkYSJ9
-
+// eyJvcmdDb2RlIjoibzJvIiwib3JkZXJOdW1iZXIiOiIxNDQ5ODIxODA1MTcyNTEiLCJ0eXBlIjoiMiIsImNvZGUiOiJhc2RhZGRhIn0=
 
 //type 1,修改自提门店短信;2,退换货提醒;3,退货成功;4,换货成功;5,发货码,6,自提码  9,优惠券
 
@@ -365,8 +356,13 @@ export default {
           map.addOverlay(marker);
         },
         json2string(obj){
-          console.log(JSON.stringify(obj));
-          return JSON.stringify(obj);
+          let datastring = JSON.stringify({
+              "orderNumber": obj.orderNumber,
+              "type": obj.type,
+              "code": obj.code,
+          });
+          console.log(datastring);
+          return datastring;
         }
     },
 }
