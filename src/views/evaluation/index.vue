@@ -165,7 +165,7 @@
 						alert(data.map.errorMsg);
 						return
 					}
-					alert("评价成功");
+					alert("评价成功，谢谢您的评价");
 					window.location.reload()
 				})
 
