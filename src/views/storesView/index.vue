@@ -2,77 +2,44 @@
 
 @import '../returnPdView/returnPdView.scss'
 
-// <tab active-color='#007aff'>
-// <!-- type不为2跟9的时候  只显示二维码 -->
-// <tab-item v-if='urlParam.action.type!=2&&urlParam.action.type!=9'>我的订单</tab-item>
-//
-// <!-- type为2跟9的时候  显示附近门店 -->
-// <tab-item v-if='urlParam.action.type==2||urlParam.action.type==9' :selected="showstore" @click="showstore=showstore?showstore:!showstore">附近门店</tab-item>
-// <!-- type为2 二维码按钮的字显示“我的订单”，9 则显示”我的优惠券”  -->
-// <tab-item v-if='urlParam.action.type==2' :selected="!showstore" @click="showstore=showstore?!showstore:showstore">我的订单</tab-item>
-// <tab-item v-if='urlParam.action.type==9' :selected="!showstore" @click="showstore=showstore?!showstore:showstore">我的优惠券</tab-item>
-// </tab>
 </style>
 
 <template>
 
 <div>
-    <!-- <div v-if="urlParam.action"> -->
-    <div>
+    <div v-if="urlParam.action">
+        <tab active-color='#007aff'>
+            <tab-item  :selected="showstore" @click="showstore=showstore?showstore:!showstore">附近门店</tab-item>
+        </tab>
         <div class="fadepage" v-show="showstore" transition="slideLeft">
-
-            <div class="pannelTitle">我的位置</div>
-            <div class="flexBox addressinfo">
-                <div>
-                    <p class="orderlocationbar"  v-show="showMyLocation">
-                        <span class="iconfont maincolor icon-dizhi orangecolor"></span>当前位置&nbsp;&nbsp;&nbsp;&nbsp;
-                        <!-- <span class="iconfont rightjiantou icon-fanhui4"></span> -->
-                    </p>
-                    <p class="orderlocationbar" @click="show2=true" v-show='!showMyLocation'>
-                        <span class="iconfont maincolor icon-kuaididaishou"></span> 订单收货地址
-                        <span class="iconfont rightjiantou icon-fanhui4"></span>
-                    </p>
-                </div>
-                <div class="startaddress" v-show='showMyLocation'>
-                    {{nowaddress}}
-                </div>
-                <div class="startaddress" v-show='!showMyLocation'>
-                    {{orderaddress}}
-                </div>
+            <div class="pannelTitle">
+              附近门店
+              <span class="showmapbtn iconfont icon-mn03"  @click="changeMapList" v-show="!showmap"></span>
+              <span class="showmapbtn iconfont icon-liebiao" @click="changeMapList" v-show="showmap"></span>
             </div>
-            <div class="pannelTitle">附近门店</div>
-            <scroller lock-x v-show='stores' :style='{height:scrollerHeight1}' v-ref:scroller>
+            <div id="baidumap" v-show="stores&&showmap" :style="{height:scrollerHeight1}"></div>
+            <scroller lock-x v-show="stores&&!showmap" :style="{height:scrollerHeight1}" v-ref:scroller>
                 <stores-box :stores="stores"></stores-box v-ref:storesBox>
             </scroller>
         </div>
-
-
-
     </div>
+    <!-- <actionsheet :show.sync="showAction" :menus="menus2" @menu-click="menuclick" cancel-text="取消" show-cancel></actionsheet> -->
     <loading :show="loading.show" :text="loading.text"></loading>
 </div>
 
 </template>
 
 <script>
-// <actionsheet :show.sync="show2" :menus="menus2" @menu-click="menuclick" cancel-text="取消" show-cancel></actionsheet>
-// <div class="fadepage" v-show='!showstore' transition="slideRight">
-// <Scroller lock-x height='scrollerHeight' :style='{height:scrollerHeight}' >
-// <!-- type不同  提示文字不同，二维码内容不同  9是优惠券信息，其余是订单信息,   注：type为5  二维码为 订单号,code  -->
-// <qrcode-box v-if="urlParam.action.type!=9" title="订单编号" :title-code="urlParam.action.orderNumber" :qrcode="urlParam.action.orderNumber+(urlParam.action.type==5?','+urlParam.action.code:'')" tips="此二维码用于门店快速找到您的订单"></qrcode-box>
-// <qrcode-box v-if="urlParam.action.type==9" title="优惠券编号" :title-code="urlParam.action.code" :qrcode="urlParam.action.code" tips="此二维码用于门店快速验证您的优惠券"></qrcode-box>
-// </Scroller>
-// </div>
 import { Promise } from 'es6-promise'
-// import store from 'src/store'
+import store from 'src/store'
 import Scroller from 'vux/components/scroller'
-// import Tab from 'vux/components/tab'
-// import TabItem from 'vux/components/tab-item'
-// import Actionsheet from 'vux/components/actionsheet'
-// import qrcodeBox from 'src/components/qrcodeBox.vue'
+import Tab from 'vux/components/tab'
+import TabItem from 'vux/components/tab-item'
+import Actionsheet from 'vux/components/actionsheet'
+import qrcodeBox from 'src/components/qrcodeBox.vue'
 import Loading from 'vux/components/loading'
 import storesBox from '../returnPdView/storesBox.vue'
-// import {Base64} from 'js-base64'
+import {Base64} from 'js-base64'
 
 import {
     getNowLngLat,
@@ -80,26 +47,20 @@ import {
     getAddressLngLat
 } from 'src/tools/HW_BmapApi'
 
-// console.log(Base64.encode(JSON.stringify({orderNumber: "E20160422102448098918415", orgCode: "work", type: "9", code: "asdadda"})));
-// console.log(Base64.encode(JSON.stringify({orderNumber: "E20160422102448098918415", orgCode: "work", type: "2", code: "asdadda"})));
-// console.log(Base64.encode(JSON.stringify({orderNumber: "E20160422102448098918415", orgCode: "work", type: "6", code: "asdadda"})));
-// console.log(Base64.encode(JSON.stringify({orderNumber: "E20160422102448098918415", orgCode: "work", type: "5", code: "asdadda"})));
-// eyJvcmRlck51bWJlciI6IkUyMDE2MDQyMjEwMjQ0ODA5ODkxODQxNSIsIm9yZ0NvZGUiOiJ3b3JrIiwidHlwZSI6IjkiLCJjb2RlIjoiYXNkYWRkYSJ9
-// eyJvcmRlck51bWJlciI6IkUyMDE2MDQyMjEwMjQ0ODA5ODkxODQxNSIsIm9yZ0NvZGUiOiJ3b3JrIiwidHlwZSI6IjIiLCJjb2RlIjoiYXNkYWRkYSJ9
-// eyJvcmRlck51bWJlciI6IkUyMDE2MDQyMjEwMjQ0ODA5ODkxODQxNSIsIm9yZ0NvZGUiOiJ3b3JrIiwidHlwZSI6IjYiLCJjb2RlIjoiYXNkYWRkYSJ9
-// eyJvcmRlck51bWJlciI6IkUyMDE2MDQyMjEwMjQ0ODA5ODkxODQxNSIsIm9yZ0NvZGUiOiJ3b3JrIiwidHlwZSI6IjUiLCJjb2RlIjoiYXNkYWRkYSJ9
-
+// const ma = Base64.encode(JSON.stringify({orgCode: "o2o"}))
+// console.log(location.origin+'/?action='+ma+'#!/returnProducts');
+// eyJvcmdDb2RlIjoibzJvIiwib3JkZXJOdW1iZXIiOiIxNDQ5ODIxODA1MTcyNTEiLCJ0eXBlIjoiMiIsImNvZGUiOiJhc2RhZGRhIn0=
 
 //type 1,修改自提门店短信;2,退换货提醒;3,退货成功;4,换货成功;5,发货码,6,自提码  9,优惠券
 
 export default {
     components: {
-        // TabItem,
-        // Tab,
+        TabItem,
+        Tab,
         Loading,
         Scroller,
         storesBox,
-        // qrcodeBox,
+        qrcodeBox,
         // Actionsheet,
     },
 
@@ -108,18 +69,23 @@ export default {
         return {
             stores: [],
             orderaddress: '',
+            orderInfo: null,
             urlParam: {},
             ranges: [],
+            storecondition:null,//当前门店是哪个城市的
             loading:{
               show:true,
               text:'加载中...'
             },
             showstore: true,
-            showMyLocation: false,
-            scrollerHeight1: window.innerHeight - 120 + 'px',
+            showMyLocation: true,
+            scrollerHeight1: window.innerHeight - 82 + 'px',
             scrollerHeight: window.innerHeight - 44 + 'px',
-            show2: false,
+            showAction: false,
+            showmap:false,
+            baidumap:'',
             nowaddress: '',
+            nowLngLat: {},
             orderLngLat: {},
             menus2: {
                 menu1: '<p class="actionsheetbtn"><span class=" iconfont icon-dizhi orangecolor"></span>当前位置</p>',
@@ -132,110 +98,92 @@ export default {
         data({to:{query:{action}}}) {
             // console.log(JSON.parse(decodeURIComponent(Base64.decode(action))))
             let self = this
-            return Promise.resolve([
+            return Promise.all([
                 // store.fetchStors2(),
                 // store.fetchOrder(),
-                // store.fetchUrlParma(),
+                store.fetchUrlParma(),
             ]).then((data) => {
-                let [ orderdata, urlParam] = data
-                document.title = '附近门店';//getTitleName(urlParam)
+                let [urlParam] = data
+                document.title = getTitleName(urlParam)
+                // console.log('returndata',orderdata.order.logisticInfo.address);
+                setTimeout(()=>{
+                    self.menuclick('menu1',true)
+                })
                 return {
                     // stores: stores,
-                    orderaddress: 'a',//orderdata.order.logisticInfo.address,
-                    urlParam: '',//urlParam,
+                    // orderaddress: orderdata.order.logisticInfo.address,
+                    // orderInfo: orderdata.order,
+                    storecondition: ',',//orderdata.order.logisticInfo.province + ',' + orderdata.order.logisticInfo.city,
+                    urlParam: urlParam,
                     loading:{
                       show:false,
                       text:'加载中...'
                     },
-                    showstore: true//(urlParam.action.type == 2) ? true : false
+                    showstore: true
                 }
             })
         }
     },
     ready: function() {
-      let self=this
-      this.$log();
-      //取store信息
-      // store.fetchStors()
-      Promise.resolve([
-          {
-            address:"上海市徐汇区桂平路418号2601室",
-            contact:"吴涛",
-            latAndLng:"",
-            mobile:"13156567676",
-            phone:"0370-9087643",
-            storeCode:"1",
-            storeName:"总仓",
-            warehouseId:"",
-          },
-          {
-            address:"上海市徐汇区桂平路418号2601室",
-            contact:"",
-            latAndLng:"",
-            mobile:"14790481992",
-            phone:"",
-            storeCode:"4",
-            storeName:"测试1",
-            warehouseId:"",
-          },
-          {
-            address:"上海上海市浦东新区芳甸路300号联洋广场A区",
-            contact:"",
-            latAndLng:"",
-            mobile:"15618952650",
-            phone:"",
-            storeCode:"47",
-            storeName:"联洋广场",
-            warehouseId:"",
-          },
-          {
-            address:"上海市闵行区万源路400弄",
-            contact:"蛋蛋",
-            latAndLng:"",
-            mobile:"18217123101",
-            phone:"",
-            storeCode:"60",
-            storeName:"蛋蛋小卖部",
-            warehouseId:"",
-          }
-      ])
-      .then(stores=>{
-        //默认距离设置9999999  storesBox中会直接显示“未获取距离“  并且排序会排在最后面
-        stores.map(store=>store.range=9999999);
-        //存门店信息
-        self.stores=stores
-        //更新scroller
-        setTimeout(()=>{
-          self.$nextTick(()=>{
-            self.$refs.scroller.reset()
-          })
-          self.menuclick('menu1');
-        },stores.length*100)
-        //取门店地址经纬度
-        return Promise.all(self.stores.map(store => getAddressLngLat(store.address)))
-      })
-      .then(storeLLs=>{
-        // 存门店经纬度
-        storeLLs.map((storeLL,i)=>self.stores[i].point=storeLL)
-        // 取订单地址经纬度
-        return getAddressLngLat(self.orderaddress)
-      })
-      .then(orderLL=>{
-        // 存订单地址经纬度
-        self.orderLngLat=orderLL
-        // 计算订单地址与门店距离
-        self.setRange(self.orderLngLat)
-      })
-
+      console.log('ready');
     },
     methods: {
-      // remove(){
-      //   let cc=[],self=this
-      //   self.stores.unshift(cc.concat(self.stores[0]))
-      // },
-        menuclick(a) {
+        getmaininfo(){
+          // console.log('加载门店信息');
+          let self=this
+          return new Promise(function(resolve, reject) {
+            //取store信息
+            store.fetchStors({
+              type: 'store',
+              // condition:  '湖南, 长沙'
+              condition: self.storecondition,
+            })
+            .then(stores=>{
+              //默认距离设置9999999  storesBox中会直接显示“未获取距离“  并且排序会排在最后面
+              // console.log('$$$$',stores);
+              stores.map(store=>store.range=9999999);
+              //存门店信息
+              self.stores=stores
+              //更新scroller
+              setTimeout(()=>{
+                self.$nextTick(()=>{
+                  self.$refs.scroller.reset()
+                })
+              },stores.length*150)
+              // console.log('门店信息搞定');
+              //取门店地址经纬度
+              return Promise.all(self.stores.map(store => getAddressLngLat(store.address)))
+            })
+            .then(storeLLs=>{
+              // 存门店经纬度
+              storeLLs.map((storeLL,i)=>self.stores[i].point=storeLL)
+              // console.log('@#$%^');
+              // console.log('门店经纬度搞定',self.orderaddress);
+              resolve()
+            })
+            .catch(msg=>{
+              reject(msg)
+            })
+          })
+        },
+        //更新地图的点
+        changeMapList(){
+          let self = this
+          this.showmap=!this.showmap
+          if(!self.baidumap){
+            setTimeout(()=>{
+              self.baidumap= new BMap.Map("baidumap")
+              if(self.showMyLocation){
+                self.setmap(self.nowLngLat)
+              }else{
+                self.setmap(self.orderLngLat)
+              }
+            })
+          }
+        },
+        menuclick(a,force) {
             let self = this
-            if (a === 'menu1') {
+            if (a === 'menu1' && (self.showMyLocation === false||force)) {
                 self.showMyLocation = true
                 self.loading.show = true
                 self.loading.text = '正在获取地址..'
@@ -243,14 +191,42 @@ export default {
                     .then(r => {
                         self.loading.show = false
                         self.loading.text = ''
-                        // console.log(r.address.city+r.address.district+r.address.street+r.address.street_number)
-                        self.nowaddress=r.address.city+r.address.district+r.address.street+r.address.street_number
-                        self.setRange(r.point)
+                        self.nowLngLat = r.point
+                        self.nowaddress = r.address.city+r.address.district+r.address.street+r.address.street_number
+                        let newstorecondition = r.address.province.replace('市', '') + ',' + r.address.city
+                        self.checkStoreconditionAndSetrange(newstorecondition, self.nowLngLat)
                     })
-            } else if (a === 'menu2') {
+            } else if (a === 'menu2' && self.showMyLocation === true) {
                 self.showMyLocation = false
-                self.setRange(self.orderLngLat)
+                let newstorecondition = self.orderInfo.logisticInfo.province + ',' + self.orderInfo.logisticInfo.city
+                self.checkStoreconditionAndSetrange(newstorecondition, self.orderLngLat)
             }
+        },
+        checkStoreconditionAndSetrange(newstorecondition, startPoint) {
+          let self = this
+          //加.split(',')[1] 是为了直接对比市 订单中直辖市是 上海   百度地图是 上海市  不一样  会导致接口重复调用
+          if(self.storecondition.split(',')[1] !== newstorecondition.split(',')[1]){
+          // if(self.storecondition !== newstorecondition){
+            self.storecondition = newstorecondition
+            //当前位置与订单位置非同一城市  要重新获取门店数据  再计算距离
+            self.getmaininfo()
+            .then(()=>{
+              // console.log('@@@',self.storecondition,newstorecondition);
+              // 取订单地址经纬度
+              getAddressLngLat(self.orderaddress)
+              .then(orderLL=>{
+                // 存订单地址经纬度
+                self.orderLngLat=orderLL
+                // 计算订单地址与门店距离
+                self.setRange(startPoint)
+              })
+            },msg=>{
+              console.error('###',msg);
+            })
+
+          }else{
+            self.setRange(startPoint)
+          }
         },
         setRange(start) {
             let self = this
@@ -271,8 +247,67 @@ export default {
                     self.$set('stores[' + i + '].range', range.tr[0].cg)
                   },200*i)
                 })
+                self.setmap(start)
             })
+        },
+        setmap(centerpoint){
+            // console.log(centerpoint.lng, centerpoint.lat);
+            // var point = new BMap.Point(116.404, 39.915);
+            // var point = new BMap.Point(31.170, 121.411);
+            let pointnmae = "订单收货地址"
+            let deletename = '当前位置'
 
+            if(this.showMyLocation){
+              pointnmae = "当前位置"
+              deletename = '订单收货地址'
+            }
+            //移动地图到相应位置  显示相应尺寸
+            let point = new BMap.Point(centerpoint.lng, centerpoint.lat)
+            this.baidumap.centerAndZoom(point, 11)
+            //获取地图上的点  没点则设置点  有点说明已经设置过门店就不用设置了 并 清理之前设置的centerpoint点
+            var allOverlay = this.baidumap.getOverlays()
+            console.log(allOverlay.length)
+            // debugger;
+            if(allOverlay.length > 0){
+              //清理之前的centerpoint点
+              // console.log('##')
+              allOverlay.forEach((overlay,i)=>{
+                if(overlay.getLabel && overlay.getLabel().content === deletename){
+                  // console.log('$$')
+                  this.baidumap.removeOverlay(overlay);
+                  // console.log(overlay.getLabel().content,centerpoint,deletename,pointnmae)
+                }
+              })
+              // console.log('@@')
+            }else{
+              //设置point点
+              this.stores.forEach(store=>{
+                if(store.point){
+                  this.markpoint(this.baidumap,store.point,store.storeName)
+                }
+              })
+            }
+            // console.log('&&')
+            // console.log(centerpoint,pointnmae);
+            //加上centerpoin点
+            this.markpoint(this.baidumap,centerpoint,pointnmae)
+          	// marker.setAnimation(BMAP_ANIMATION_BOUNCE); //跳动的动画
+        },
+        markpoint(map,mappoint,text){
+          let point = new BMap.Point(mappoint.lng, mappoint.lat);
+          let marker = new BMap.Marker(point);  // 创建标注
+          let label = new BMap.Label(text,{offset:new BMap.Size(-10,-20)});
+          marker.setLabel(label)
+          map.addOverlay(marker);
+        },
+        json2string(obj){
+          let datastring = JSON.stringify({
+              "orderNumber": obj.orderNumber,
+              "type": obj.type,
+              "code": obj.code,
+          });
+          console.log(datastring);
+          return datastring;
         }
     },
 }

@@ -133,6 +133,7 @@ export default {
             showmap:false,
             baidumap:'',
             nowaddress: '',
+            nowLngLat: {},
             orderLngLat: {},
             menus2: {
                 menu1: '<p class="actionsheetbtn"><span class=" iconfont icon-dizhi orangecolor"></span>当前位置</p>',
@@ -154,20 +155,24 @@ export default {
                 document.title = getTitleName(urlParam)
                 // console.log('returndata',orderdata.order.logisticInfo.address);
                 setTimeout(()=>{
-                  self.getmaininfo()
-                  .then(()=>{
-                    // 取订单地址经纬度
-                    getAddressLngLat(self.orderaddress)
-                    .then(orderLL=>{
-                      // 存订单地址经纬度
-                      self.orderLngLat=orderLL
-                      // 计算订单地址与门店距离
-                      self.setRange(self.orderLngLat)
-                      // if(self.showmap=true){
-                      //   self.changeMapList(orderLL)
-                      // }
-                    })
-                  });
+                  if(self.showMyLocation){
+                    self.menuclick('menu1',true)
+                  }else{
+                    self.getmaininfo()
+                    .then(()=>{
+                      // 取订单地址经纬度
+                      getAddressLngLat(self.orderaddress)
+                      .then(orderLL=>{
+                        // 存订单地址经纬度
+                        self.orderLngLat=orderLL
+                        // 计算订单地址与门店距离
+                        self.setRange(self.orderLngLat)
+                        // if(self.showmap=true){
+                        //   self.changeMapList(orderLL)
+                        // }
+                      })
+                    });
+                  }
                 })
                 return {
                     // stores: stores,
@@ -230,16 +235,20 @@ export default {
         changeMapList(){
           let self = this
           this.showmap=!this.showmap
-          if(!this.baidumap){
+          if(!self.baidumap){
             setTimeout(()=>{
-              this.baidumap= new BMap.Map("baidumap")
-              this.setmap(this.orderLngLat)
+              self.baidumap= new BMap.Map("baidumap")
+              if(self.showMyLocation){
+                self.setmap(self.nowLngLat)
+              }else{
+                self.setmap(self.orderLngLat)
+              }
             })
           }
         },
-        menuclick(a) {
+        menuclick(a,force) {
             let self = this
-            if (a === 'menu1' && self.showMyLocation === false) {
+            if (a === 'menu1' && (self.showMyLocation === false||force)) {
                 self.showMyLocation = true
                 self.loading.show = true
                 self.loading.text = '正在获取地址..'
@@ -247,9 +256,10 @@ export default {
                     .then(r => {
                         self.loading.show = false
                         self.loading.text = ''
-                        self.nowaddress=r.address.city+r.address.district+r.address.street+r.address.street_number
+                        self.nowLngLat = r.point
+                        self.nowaddress = r.address.city+r.address.district+r.address.street+r.address.street_number
                         let newstorecondition = r.address.province.replace('市', '') + ',' + r.address.city
-                        self.checkStoreconditionAndSetrange(newstorecondition, r.point)
+                        self.checkStoreconditionAndSetrange(newstorecondition, self.nowLngLat)
                     })
             } else if (a === 'menu2' && self.showMyLocation === true) {
                 self.showMyLocation = false
