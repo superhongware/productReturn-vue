@@ -140,7 +140,7 @@ store.CommentAdd = (CommentData) => {
 	});
 }
 const Couponjson = {
-	orgCode: 'o2o',
+	orgCode: urlParam.action.orgCode,
 	openID: urlParam.action.openID,
 	appID: urlParam.action.appID
 };
