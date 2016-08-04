@@ -47,6 +47,7 @@ import {
     getAddressLngLat
 } from 'src/tools/HW_BmapApi'
 
+// console.log(Base64.decode('b3BlbklEPW9YVjlydUk3VFk1a0h2V3p2ZUVXRkg1UlVvb3cmYXBwSUQ9d3g2ZTBjZGJiZWYzOWFjNGZjJm9yZ2NvZGU9bzJv'));
 // const ma = Base64.encode(JSON.stringify({orgCode: "o2o"}))
 // console.log(location.origin+'/?action='+ma+'#!/returnProducts');
 // eyJvcmdDb2RlIjoibzJvIiwib3JkZXJOdW1iZXIiOiIxNDQ5ODIxODA1MTcyNTEiLCJ0eXBlIjoiMiIsImNvZGUiOiJhc2RhZGRhIn0=
@@ -131,6 +132,7 @@ export default {
         getmaininfo(){
           // console.log('加载门店信息');
           let self=this
+
           return new Promise(function(resolve, reject) {
             //取store信息
             store.fetchStors({
@@ -213,13 +215,9 @@ export default {
             .then(()=>{
               // console.log('@@@',self.storecondition,newstorecondition);
               // 取订单地址经纬度
-              getAddressLngLat(self.orderaddress)
-              .then(orderLL=>{
-                // 存订单地址经纬度
-                self.orderLngLat=orderLL
-                // 计算订单地址与门店距离
-                self.setRange(startPoint)
-              })
+              // if(nowaddress)
+              // console.log('@@@@');
+              self.setRange(startPoint)
             },msg=>{
               console.error('###',msg);
             })

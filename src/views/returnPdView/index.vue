@@ -206,6 +206,9 @@ export default {
             .then(stores=>{
               //默认距离设置9999999  storesBox中会直接显示“未获取距离“  并且排序会排在最后面
               // console.log('$$$$',stores);
+              if(!stores){
+                stores=[];
+              }
               stores.map(store=>store.range=9999999);
               //存门店信息
               self.stores=stores
@@ -278,13 +281,13 @@ export default {
             .then(()=>{
               // console.log('@@@',self.storecondition,newstorecondition);
               // 取订单地址经纬度
-              getAddressLngLat(self.orderaddress)
-              .then(orderLL=>{
+              // getAddressLngLat(self.orderaddress)
+              // .then(orderLL=>{
                 // 存订单地址经纬度
-                self.orderLngLat=orderLL
+                // self.orderLngLat=orderLL
                 // 计算订单地址与门店距离
                 self.setRange(startPoint)
-              })
+              // })
             },msg=>{
               console.error('###',msg);
             })

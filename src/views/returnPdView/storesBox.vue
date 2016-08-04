@@ -3,6 +3,7 @@
     <store-item :store='store' v-for="store in stores | orderBy 'range'" transition="item"></store-item>
   </ul> -->
 <ul class="storeBox" >
+  <li class="nostore" v-if="stores.length==0">附近没有门店</li>
   <li  class="store" v-for="store in stores | orderBy 'range'" transition="item" stagger='100'>
       <div class="flexBox">
           <div class="storeName">{{store.storeName}}</div>
@@ -80,7 +81,9 @@ export default {
   // color: red;
   transition: transform 0.5s cubic-bezier(.55,0,.1,1); /* applied when moving */
 }
-
+.nostore{
+  text-align:center;
+}
 
 .store{
   list-style:none;
