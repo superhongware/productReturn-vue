@@ -77,7 +77,7 @@
 				this.btnStatus = data.prompt || ''
 			})
 			store.fetchUrlParma().then(data => {
-				store.CouponInfoGet(data.action.couponID).then(data => {
+				store.CouponInfoGet(data.action.couponId).then(data => {
 					console.log(data)
 					self.loading.show = false
 					if (!data.isSuccess) {
