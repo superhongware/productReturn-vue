@@ -206,7 +206,7 @@ store.CouponInitialization = () => {
 	return new Promise(function(resolve, reject) {
 		let data = {
 			method: 'V5.mobile.wx.Coupon.initialization',
-			couponID: urlParam.action.couponID
+			couponID: urlParam.action.couponId
 		}
 		hwGetJsonp(apiurl + 'WXCouponInitialization', Object.assign(data, Couponjson))
 			.then(data => {
