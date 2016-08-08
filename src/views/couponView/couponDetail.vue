@@ -26,7 +26,7 @@
 					</div>
 				</div>
 				<h1>{{couponInfo.couponName}}</h1>
-				<button class="weui_btn weui_btn_primary" @click='goCode'> 立即使用 </button>
+				<button class="weui_btn weui_btn_primary" @click='goCode' style="width:130px"> 立即使用 </button>
 				<p>使用条件：满{{couponInfo.useCondition}}可用<br>使用时间：{{couponInfo.lifespan}}<br>使用说明：{{{couponInfo.memo}}}</p>
 			</div>
 
@@ -60,7 +60,7 @@
 			data: function(transition) {
 				this.loading.show=true
 				var self = this;
-				store.CouponInfoGet(transition.to.params.code).then(data => {
+				store.CouponInfoGetdetail(transition.to.params.code).then(data => {
 					console.log(data)
 					if (!data.isSuccess) {
 						alert(data.map.errorMsg);
@@ -97,7 +97,7 @@
 				this.$route.router.go({
 					name: 'qrbacode',
 					params: {
-						code: this.couponInfo.couponNum+','+escape(this.couponInfo.couponName)
+						code: this.couponInfo.couponCode+','+escape(this.couponInfo.couponName)
 					}
 				})
 			}
