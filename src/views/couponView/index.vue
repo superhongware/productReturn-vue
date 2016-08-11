@@ -93,6 +93,7 @@
 		},
 		methods: {
 			prompt() {
+				var self=this;
 				store.CouponReceive()
 					.then(data => {
 						console.log(data)
@@ -108,7 +109,7 @@
 									alert("请输入正确的手机号")
 									return
 								}
-								store.RMCouponReceive(tel)
+								store.RMCouponReceive(tel,self.couponInfo.couponCode)
 									.then(data => {
 										console.log(data)
 										if(!data.isSuccess) {
