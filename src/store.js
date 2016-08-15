@@ -218,13 +218,13 @@ store.RMCouponReceive = (tel,couponCode) => {
 	});
 }
 
-store.CouponReceive = () => {
-
+store.CouponReceive = (couponCode) => {
 	return new Promise(function(resolve, reject) {
 		let data = {
 			method: 'V5.mobile.wx.coupon.receive',
-			couponID: urlParam.action.couponId
+			couponID: couponCode
 		}
+		console.log(couponCode)
 		hwGetJsonp(apiurl + 'WXCouponReceive', Object.assign(data, Couponjson))
 			.then(data => {
 				resolve(data)

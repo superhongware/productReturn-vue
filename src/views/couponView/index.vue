@@ -94,7 +94,7 @@
 		methods: {
 			prompt() {
 				var self=this;
-				store.CouponReceive()
+				store.CouponReceive(self.couponInfo.couponCode)
 					.then(data => {
 						console.log(data)
 						if(!data.isSuccess) {
@@ -123,6 +123,11 @@
 									})
 
 							}
+						}else if(data.prompt == 4) {
+							alert('手机号已领取');
+							this.$route.router.go({
+								name: 'mycoupon'
+							})
 						} else if(data.prompt == 3) {
 							alert('领取成功，已存入会员卡包');
 							this.$route.router.go({
