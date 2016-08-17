@@ -19,7 +19,7 @@
 					</div>
 					<div class="disName disNamezhe" v-if="couponInfo.couponType=='2'">
 						<div class="disNamet">
-							7<span>折</span>
+							{{couponInfo.couponSmaller}}<span>折</span>
 						</div>
 						<p>优惠劵<br>&nbsp;</p>
 					</div>
