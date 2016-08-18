@@ -27,7 +27,7 @@
 				</div>
 				<h1>{{couponInfo.couponName}}</h1>
 				<button class="weui_btn weui_btn_primary" @click='goCode' style="width:130px"> 立即使用 </button>
-				<p>使用条件：满{{couponInfo.useCondition}}{{couponInfo.couponType=='3'?'件':'元'}}可用<br>使用时间：{{couponInfo.lifespan}}<br>使用说明：{{{couponInfo.memo}}}</p>
+				<p>使用条件：满{{couponInfo.useCondition}}{{couponInfo.couponType=='3'&&couponInfo.couponSmaller=='true'?'件':'元'}}可用<br>使用时间：{{couponInfo.lifespan}}<br>使用说明：{{{couponInfo.memo}}}</p>
 			</div>
 
 		</div>
