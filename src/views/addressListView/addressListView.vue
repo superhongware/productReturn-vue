@@ -144,7 +144,7 @@ export default {
                 store.getMemberAddress(urlParam.action.mobilePhone)
             ]).then((data) => {
                 // console.log(data[0]);
-                if (!data[0].isSuccess) {
+                // if (!data[0].isSuccess) {
                     // data[0] = {
                     //     userName: "老王",
                     //     mobilePhone: "18888888888",
@@ -166,14 +166,14 @@ export default {
                     //         memberAddress: "桂平路418号"
                     //     }]
                     // }
-                    self.showAlert('数据加载失败，请刷新页面重试')
-                    return {
-                      loading: {
-                          show: false,
-                          text: '加载中...'
-                      }
-                    }
-                }
+                //     self.showAlert('数据加载失败，请刷新页面重试')
+                //     return {
+                //       loading: {
+                //           show: false,
+                //           text: '加载中...'
+                //       }
+                //     }
+                // }
 
                 return {
                     memberinfo: data[0],
