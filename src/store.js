@@ -1,12 +1,21 @@
 // import Firebase from 'firebase'
-import { EventEmitter } from 'events'
-import { Promise } from 'es6-promise'
-import { hwGetJsonp, hwPost } from './tools/HW_SuperApi'
-import { UrlParam } from './tools/GetUrlParam'
+import {
+	EventEmitter
+} from 'events'
+import {
+	Promise
+} from 'es6-promise'
+import {
+	hwGetJsonp,
+	hwPost
+} from './tools/HW_SuperApi'
+import {
+	UrlParam
+} from './tools/GetUrlParam'
 import config from './config'
 
 // const api = new Firebase('https://hacker-news.firebaseio.com/v0')
-let apiurl = config.apiurl+'/openApi/dyncHongware/mobile/';
+let apiurl = config.apiurl + '/openApi/dyncHongware/mobile/';
 
 const itemsCache = Object.create(null)
 const store = new EventEmitter()
@@ -43,39 +52,39 @@ store.fetchUrlParma = () => {
  * @param {String} objdata.condition 当查询类型为“store”值为省市，格式（湖南省，永州市），当查询类型为“order”值为订单编号
  */
 store.fetchStors = (objdata) => {
-	// console.log('****',objdata.condition);
-	if (storeDate[objdata.condition]) {
-		return Promise.resolve(storeDate[objdata.condition])
-	} else {
-		return new Promise(function(resolve, reject) {
-			let data = {
-				method: 'V5.mobile.hfive.warehouse',
-			}
-			let storesP = hwGetJsonp(apiurl + 'hfiveWarehouse', Object.assign(data, configjson, objdata))
-				.then(data => {
-					storeDate[objdata.condition]=data.stores;
-					// storeDate = data.stores;
-					resolve(data.stores)
-				})
-		})
+		// console.log('****',objdata.condition);
+		if(storeDate[objdata.condition]) {
+			return Promise.resolve(storeDate[objdata.condition])
+		} else {
+			return new Promise(function(resolve, reject) {
+				let data = {
+					method: 'V5.mobile.hfive.warehouse',
+				}
+				let storesP = hwGetJsonp(apiurl + 'hfiveWarehouse', Object.assign(data, configjson, objdata))
+					.then(data => {
+						storeDate[objdata.condition] = data.stores;
+						// storeDate = data.stores;
+						resolve(data.stores)
+					})
+			})
+		}
 	}
-}
-// store.fetchStors = () => {
-// 	if (storeDate.length > 0) {
-// 		return Promise.resolve(storeDate)
-// 	} else {
-// 		return new Promise(function(resolve, reject) {
-// 			let data = {
-// 				method: 'V5.mobile.allocate.warehouse.search',
-// 			}
-// 			let storesP = hwGetJsonp(apiurl + 'warehouseSearch', Object.assign(data, configjson))
-// 				.then(data => {
-// 					storeDate = data.stores;
-// 					resolve(data.stores)
-// 				})
-// 		})
-// 	}
-// }
+	// store.fetchStors = () => {
+	// 	if (storeDate.length > 0) {
+	// 		return Promise.resolve(storeDate)
+	// 	} else {
+	// 		return new Promise(function(resolve, reject) {
+	// 			let data = {
+	// 				method: 'V5.mobile.allocate.warehouse.search',
+	// 			}
+	// 			let storesP = hwGetJsonp(apiurl + 'warehouseSearch', Object.assign(data, configjson))
+	// 				.then(data => {
+	// 					storeDate = data.stores;
+	// 					resolve(data.stores)
+	// 				})
+	// 		})
+	// 	}
+	// }
 
 //取门店信息
 store.fetchStors2 = () => {
@@ -92,11 +101,11 @@ store.fetchStors2 = () => {
 
 //取订单信息
 store.fetchOrder = (orderNumber) => {
-	if (!orderNumber) {
+	if(!orderNumber) {
 		orderNumber = urlParam.action.orderNumber
 	}
 	return new Promise(function(resolve, reject) {
-		if (orderInfoCache[orderNumber]) {
+		if(orderInfoCache[orderNumber]) {
 			resolve(orderInfoCache[orderNumber])
 		} else {
 			let data = {
@@ -115,7 +124,7 @@ store.CommentInfoGet = () => {
 		let data = {
 			method: 'V5.mobile.order.comment.info.get',
 			orderNumber: urlParam.action.orderNumber,
-			commentType:urlParam.action.commentType||'1',
+			commentType: urlParam.action.commentType || '1',
 		}
 		hwGetJsonp(apiurl + 'OrderCommentInfoGet', Object.assign(data, configjson))
 			.then(data => {
@@ -129,8 +138,8 @@ store.CommentAdd = (CommentData) => {
 		let data = {
 			method: 'V5.mobile.order.Comment.add',
 			orderNumber: urlParam.action.orderNumber,
-			commentType:urlParam.action.commentType||'1',
-			commentData:CommentData
+			commentType: urlParam.action.commentType || '1',
+			commentData: CommentData
 		}
 		hwGetJsonp(apiurl + 'OrderCommentAdd', Object.assign(data, configjson))
 			.then(data => {
@@ -164,6 +173,7 @@ store.CouponInfoGet = (couponNumber) => {
 			method: 'V5.mobile.wx.coupon.info.get',
 			couponNumber: couponNumber
 		}
+		console.log(Object.assign(data, Couponjson))
 		hwGetJsonp(apiurl + 'wxCouponInfoGet', Object.assign(data, Couponjson))
 			.then(data => {
 				resolve(data)
@@ -172,13 +182,34 @@ store.CouponInfoGet = (couponNumber) => {
 	});
 }
 
-store.RMCouponReceive = (tel) => {
+store.CouponInfoGetdetail = (couponNumber) => {
+	return new Promise(function(resolve, reject) {
+		let Coupondata = {
+			orgCode: urlParam.action.orgCode,
+			openID: urlParam.action.openID || couponNumber,
+			appID: urlParam.action.appID || couponNumber
+		};
+		let data = {
+			method: 'V5.mobile.wx.coupon.info.get',
+			couponNumber: couponNumber
+		}
+		console.log(Object.assign(data, Coupondata))
+		hwGetJsonp(apiurl + 'wxCouponInfoGet', Object.assign(data, Coupondata))
+			.then(data => {
+				resolve(data)
+			})
+
+	});
+}
+
+store.RMCouponReceive = (tel,couponCode) => {
 	return new Promise(function(resolve, reject) {
 		let data = {
 			method: 'V5.mobile.wx.rmCoupon.receive',
 			mobilePhone: tel,
-			couponCode: urlParam.action.couponCode
+			couponCode: couponCode
 		}
+		console.log(data)
 		hwGetJsonp(apiurl + 'WXRMCouponReceive', Object.assign(data, Couponjson))
 			.then(data => {
 				resolve(data)
@@ -187,13 +218,13 @@ store.RMCouponReceive = (tel) => {
 	});
 }
 
-store.CouponReceive = () => {
-
+store.CouponReceive = (couponCode) => {
 	return new Promise(function(resolve, reject) {
 		let data = {
 			method: 'V5.mobile.wx.coupon.receive',
-			couponCode: urlParam.action.couponCode
+			couponID: couponCode
 		}
+		console.log(couponCode)
 		hwGetJsonp(apiurl + 'WXCouponReceive', Object.assign(data, Couponjson))
 			.then(data => {
 				resolve(data)
@@ -206,7 +237,8 @@ store.CouponInitialization = () => {
 	return new Promise(function(resolve, reject) {
 		let data = {
 			method: 'V5.mobile.wx.Coupon.initialization',
-			couponID: urlParam.action.couponId
+			couponID: urlParam.action.couponId,
+			type: urlParam.action.type
 		}
 		hwGetJsonp(apiurl + 'WXCouponInitialization', Object.assign(data, Couponjson))
 			.then(data => {
@@ -216,125 +248,124 @@ store.CouponInitialization = () => {
 	});
 }
 
-
 /*
 	发送验证码
 */
 store.sendvcode = (mobilePhone) => {
-	// if (!objdata) {objdata = {}}
-	return new Promise(function(resolve, reject) {
-		let data = {
-			method: 'V5.mobile.wx.code.send',
-			orgCode: urlParam.action.orgCode,
-			openID: urlParam.action.openID,
-			appID: urlParam.action.appID,
-			mobilePhone: mobilePhone,
-		}
-		hwGetJsonp(apiurl + 'wxCodeSend', Object.assign({},data))
-			.then(data => {
-				resolve(data)
-			})
-	});
-}
-/*
-	用户注册
-*/
+		// if (!objdata) {objdata = {}}
+		return new Promise(function(resolve, reject) {
+			let data = {
+				method: 'V5.mobile.wx.code.send',
+				orgCode: urlParam.action.orgCode,
+				openID: urlParam.action.openID,
+				appID: urlParam.action.appID,
+				mobilePhone: mobilePhone,
+			}
+			hwGetJsonp(apiurl + 'wxCodeSend', Object.assign({}, data))
+				.then(data => {
+					resolve(data)
+				})
+		});
+	}
+	/*
+		用户注册
+	*/
 store.register = (mobilePhone) => {
-	// if (!objdata) {objdata = {}}
-	return new Promise(function(resolve, reject) {
-		let data = {
-			method: 'V5.mobile.wx.member.create',
-			orgCode: urlParam.action.orgCode,
-			openID: urlParam.action.openID,
-			appID: urlParam.action.appID,
-			mobilePhone: mobilePhone,
-		}
-		// hwGetJsonp(apiurl + 'wxMember', Object.assign({},data))
-		hwPost(apiurl + 'wxMemberCreate', Object.assign({},data))
-			.then(data => {
-				resolve(data)
-			})
-	});
-}
-/*
-	用户地址列表获取
-*/
+		// if (!objdata) {objdata = {}}
+		return new Promise(function(resolve, reject) {
+			let data = {
+					method: 'V5.mobile.wx.member.create',
+					orgCode: urlParam.action.orgCode,
+					openID: urlParam.action.openID,
+					appID: urlParam.action.appID,
+					mobilePhone: mobilePhone,
+				}
+				// hwGetJsonp(apiurl + 'wxMember', Object.assign({},data))
+			hwPost(apiurl + 'wxMemberCreate', Object.assign({}, data))
+				.then(data => {
+					resolve(data)
+				})
+		});
+	}
+	/*
+		用户地址列表获取
+	*/
 store.getMemberAddress = (mobilePhone) => {
-	// if (!objdata) {objdata = {}}
-	return new Promise(function(resolve, reject) {
-		let data = {
-			method: 'V5.mobile.member.address.search',
-			orgCode: urlParam.action.orgCode,
-			openID: urlParam.action.openID,
-			appID: urlParam.action.appID,
-		}
-		// hwGetJsonp(apiurl + 'wxMember', Object.assign({},data))
-		hwGetJsonp(apiurl + 'memberAddressSearch', Object.assign(data,configjson))
-			.then(data => {
-				resolve(data)
-			})
-	});
-}
-// store.getMemberAddress = (mobilePhone) => {
-// 	// if (!objdata) {objdata = {}}
-// 	return new Promise(function(resolve, reject) {
-// 		let data = {
-// 			method: 'V5.mobile.channelMember.get',
-// 			mobilePhone: mobilePhone,
-// 		}
-// 		// hwGetJsonp(apiurl + 'wxMember', Object.assign({},data))
-// 		hwGetJsonp(apiurl + 'channelMemberGet', Object.assign(data,configjson))
-// 			.then(data => {
-// 				resolve(data)
-// 			})
-// 	});
-// }
-/*
-	用户地址新增
-*/
+		// if (!objdata) {objdata = {}}
+		return new Promise(function(resolve, reject) {
+			let data = {
+					method: 'V5.mobile.member.address.search',
+					orgCode: urlParam.action.orgCode,
+					openID: urlParam.action.openID,
+					appID: urlParam.action.appID,
+				}
+				// hwGetJsonp(apiurl + 'wxMember', Object.assign({},data))
+			hwGetJsonp(apiurl + 'memberAddressSearch', Object.assign(data, configjson))
+				.then(data => {
+					resolve(data)
+				})
+		});
+	}
+	// store.getMemberAddress = (mobilePhone) => {
+	// 	// if (!objdata) {objdata = {}}
+	// 	return new Promise(function(resolve, reject) {
+	// 		let data = {
+	// 			method: 'V5.mobile.channelMember.get',
+	// 			mobilePhone: mobilePhone,
+	// 		}
+	// 		// hwGetJsonp(apiurl + 'wxMember', Object.assign({},data))
+	// 		hwGetJsonp(apiurl + 'channelMemberGet', Object.assign(data,configjson))
+	// 			.then(data => {
+	// 				resolve(data)
+	// 			})
+	// 	});
+	// }
+	/*
+		用户地址新增
+	*/
 store.addMemberAddress = (addressInfo) => {
-	// if (!objdata) {objdata = {}}
-	return new Promise(function(resolve, reject) {
-		let data = {
-			method: 'V5.mobile.member.address.create',
-			openID: urlParam.action.openID,
-			appID: urlParam.action.appID,
-			addressInfo: JSON.stringify(addressInfo),
-		}
-		// hwGetJsonp(apiurl + 'wxMember', Object.assign({},data))
-		hwPost(apiurl + 'memberAddressCreate', Object.assign(data,configjson))
-			.then(data => {
-				resolve(data)
-			})
-	});
-}
-// store.setMemberAddress = (memberData) => {
-// 	// if (!objdata) {objdata = {}}
-// 	return new Promise(function(resolve, reject) {
-// 		let data = {
-// 			method: 'V5.mobile.platMember.add',
-// 			memberData: JSON.stringify(memberData),
-// 		}
-// 		// hwGetJsonp(apiurl + 'wxMember', Object.assign({},data))
-// 		hwPost(apiurl + 'platMemberAdd', Object.assign(data,configjson))
-// 			.then(data => {
-// 				resolve(data)
-// 			})
-// 	});
-// }
-/*
-	地址code获取
-*/
+		// if (!objdata) {objdata = {}}
+		return new Promise(function(resolve, reject) {
+			let data = {
+					method: 'V5.mobile.member.address.create',
+					openID: urlParam.action.openID,
+					appID: urlParam.action.appID,
+					addressInfo: JSON.stringify(addressInfo),
+				}
+				// hwGetJsonp(apiurl + 'wxMember', Object.assign({},data))
+			hwPost(apiurl + 'memberAddressCreate', Object.assign(data, configjson))
+				.then(data => {
+					resolve(data)
+				})
+		});
+	}
+	// store.setMemberAddress = (memberData) => {
+	// 	// if (!objdata) {objdata = {}}
+	// 	return new Promise(function(resolve, reject) {
+	// 		let data = {
+	// 			method: 'V5.mobile.platMember.add',
+	// 			memberData: JSON.stringify(memberData),
+	// 		}
+	// 		// hwGetJsonp(apiurl + 'wxMember', Object.assign({},data))
+	// 		hwPost(apiurl + 'platMemberAdd', Object.assign(data,configjson))
+	// 			.then(data => {
+	// 				resolve(data)
+	// 			})
+	// 	});
+	// }
+	/*
+		地址code获取
+	*/
 store.getAddressCode = () => {
 	// if (!objdata) {objdata = {}}
 	return new Promise(function(resolve, reject) {
 		let data = {
-			method: 'V5.mobile.areas.get',
-			orgCode: 'work',
-			id: 1,
-		}
-		// hwGetJsonp(apiurl + 'wxMember', Object.assign({},data))
-		hwPost(apiurl + 'areasGet', Object.assign({},data))
+				method: 'V5.mobile.areas.get',
+				orgCode: 'work',
+				id: 1,
+			}
+			// hwGetJsonp(apiurl + 'wxMember', Object.assign({},data))
+		hwPost(apiurl + 'areasGet', Object.assign({}, data))
 			.then(data => {
 				resolve(data)
 			})

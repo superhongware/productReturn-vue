@@ -17,9 +17,9 @@
 						</div>
 						<p>元优惠劵<br>&nbsp;</p>
 					</div>
-					<div class="disName disNamezhe"  v-if="couponInfo.couponType=='2'">
+					<div class="disName disNamezhe" v-if="couponInfo.couponType=='2'">
 						<div class="disNamet">
-							7<span>折</span>
+							{{couponInfo.couponSmaller}}<span>折</span>
 						</div>
 						<p>优惠劵<br>&nbsp;</p>
 					</div>
@@ -28,10 +28,10 @@
 					<img :src="imgSrc" />
 				</div>-->
 				<h1>{{couponInfo.couponName}}</h1>
-				<button class="weui_btn  mui-btn-disable" v-if="btnStatus=='1'">活动已结束</button>
-				<button class="weui_btn  mui-btn-disable" v-if="btnStatus=='2'">来晚了，优惠劵已被抢完</button>
-				<button class="weui_btn  mui-btn-disable" v-if="btnStatus=='3'">该手机号已领取</button>
-				<button class="weui_btn weui_btn_primary" @click="prompt" v-if="!btnStatus"> 立即领取 </button>
+				<button class="weui_btn  mui-btn-disable" style="width:140px" v-if="btnStatus=='1'">活动已结束</button>
+				<button class="weui_btn  mui-btn-disable" style="width:220px" v-if="btnStatus=='2'">来晚了，优惠劵已被抢完</button>
+				<button class="weui_btn  mui-btn-disable" style="width:140px" v-if="btnStatus=='3'">该手机号已领取</button>
+				<button class="weui_btn weui_btn_primary" style="width:115px" @click="prompt" v-if="!btnStatus"> 立即领取 </button>
 				<p>使用条件：满{{couponInfo.useCondition}}可用<br>使用时间：{{couponInfo.lifespan}}<br>使用说明：{{{couponInfo.memo}}}</p>
 			</div>
 
@@ -61,7 +61,7 @@
 				},
 				imgSrc: 'static/images/_liwu.png',
 				btnStatus: '',
-				couponInfo: {}
+				couponInfo: {},
 			}
 		},
 		route: {},
@@ -70,17 +70,18 @@
 			store.CouponInitialization().then(data => {
 				console.log(data)
 				self.loading.show = false
-				if (!data.isSuccess) {
+				if(!data.isSuccess) {
 					alert(data.map.errorMsg);
 					return
 				}
+				this.btnStatus = data.prompt
 				this.btnStatus = data.prompt || ''
 			})
 			store.fetchUrlParma().then(data => {
 				store.CouponInfoGet(data.action.couponId).then(data => {
 					console.log(data)
 					self.loading.show = false
-					if (!data.isSuccess) {
+					if(!data.isSuccess) {
 						alert(data.map.errorMsg);
 						return
 					}
@@ -92,25 +93,26 @@
 		},
 		methods: {
 			prompt() {
-				store.CouponReceive()
+				var self=this;
+				store.CouponReceive(self.couponInfo.couponCode)
 					.then(data => {
 						console.log(data)
-						if (!data.isSuccess) {
+						if(!data.isSuccess) {
 							alert(data.map.errorMsg);
 							return
 						}
-						if (data.prompt == 0) {
+						if(data.prompt == 0) {
 							var tel = prompt("请输入手机号码:", "");
-							if (tel != null) {
+							if(tel != null) {
 								var telReg = !!(tel).match(/^(0|86|17951)?(13[0-9]|15[012356789]|17[678]|18[0-9]|14[57])[0-9]{8}$/);
-								if (telReg == false) {
+								if(telReg == false) {
 									alert("请输入正确的手机号")
 									return
 								}
-								store.RMCouponReceive(tel)
+								store.RMCouponReceive(tel,self.couponInfo.couponCode)
 									.then(data => {
 										console.log(data)
-										if (!data.isSuccess) {
+										if(!data.isSuccess) {
 											alert(data.map.errorMsg);
 											return
 										}
@@ -121,7 +123,16 @@
 									})
 
 							}
-
+						}else if(data.prompt == 4) {
+							alert('手机号已领取');
+							this.$route.router.go({
+								name: 'mycoupon'
+							})
+						} else if(data.prompt == 3) {
+							alert('领取成功，已存入会员卡包');
+							this.$route.router.go({
+								name: 'mycoupon'
+							})
 						}
 					})
 

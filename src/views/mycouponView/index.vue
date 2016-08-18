@@ -99,6 +99,7 @@
 				this.showUn = x == '未使用' ? true : false
 			},
 			detailCoupon(x) {
+				console.log(x)
 				this.$route.router.go({
 					name: 'couponDetail',
 					params: {
