@@ -3,8 +3,8 @@
     <store-item :store='store' v-for="store in stores | orderBy 'range'" transition="item"></store-item>
   </ul> -->
 <ul class="storeBox" >
-  <li class="nostore" v-if="stores.length==0">附近没有门店</li>
-  <li  class="store" v-for="store in stores | orderBy 'range'" transition="item" stagger='100'>
+  <li class="nostore" v-if="stores&&stores.length==0">附近没有门店</li>
+  <li  class="store" v-if="stores" v-for="store in stores | orderBy 'range'" track-by="_uid" transition="item" stagger='100'>
       <div class="flexBox">
           <div class="storeName">{{store.storeName}}</div>
           <span class="rangetext orangecolor">
@@ -14,12 +14,12 @@
           </span>
       </div>
       <p class="storeadress">{{store.address}}</p>
-      <div class="promotions">
-        <!-- {{store.promotions | json}} -->
+      <div class="promotions" :style="{height:activeheight(store)+'px'}" @click="openit(store._uid)">
         <p class="promotion" v-for="promotion in store.promotions">
           <span class="ptype" :style="'background-color:'+colors[promotion.promotionType]">{{promotion.promotionType}}</span>{{promotion.promotionName}}
         </p>
       </div>
+      <span v-if="store.promotions.length>3" class="iconfont icon-fanhui4 downarrow" :class="{uparrow:store.openPromotions}"></span>
   </li>
 </ul>
 </template>
@@ -29,7 +29,8 @@
 // import storeItem from './storeItem.vue'
 export default {
   props:{
-    stores:Array,
+    stores:[Array,Boolean],
+    openit:Function,
   },
   data(){
     return {
@@ -51,6 +52,19 @@ export default {
   components: {
     // Scroller,
     // storeItem
+  },
+  methods:{
+    activeheight(store){
+      if(store.openPromotions){
+        return store.promotions.length*20
+      }else{
+        if(store.promotions.length>3){
+          return 60
+        }else{
+          return store.promotions.length*20
+        }
+      }
+    }
   }
 }
 </script>
@@ -115,7 +129,9 @@ export default {
   line-height:25px;
 }
 .promotions{
-
+  width:100%;
+  overflow:hidden;
+  transition:0.3s;
 }
 .promotion{
   font-size:13px;
@@ -140,6 +156,19 @@ export default {
     border-radius:2px;
     display: inline-block;
   }
+}
+.downarrow{
+  width:100%;
+  height:1px;
+  line-height:8px;
+  color:#bbb;
+  text-align:center;
+  display:block;
+  transform: rotate(0deg);
+  transition:0.3s;
+}
+.uparrow{
+  transform: rotate(-180deg);
 }
 
 </style>

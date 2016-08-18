@@ -1,7 +1,10 @@
 <style lang="sass">
 
-@import '../returnPdView/returnPdView.scss'
+@import '../returnPdView/returnPdView.scss';
 
+.vux-tab-ink-bar{
+  height:2px !important;
+}
 </style>
 
 <template>
@@ -9,9 +12,19 @@
 <div>
     <div v-if="urlParam.action">
         <tab active-color='#007aff'>
-            <tab-item  :selected="showstore" @click="showstore=showstore?showstore:!showstore">附近门店</tab-item>
+            <tab-item  :selected="showstore">附近门店</tab-item>
         </tab>
         <div class="fadepage" v-show="showstore" transition="slideLeft">
+            <div class="flexBox addressinfo">
+                <div>
+                    <p class="orderlocationbar" >
+                        <span class="iconfont maincolor icon-dizhi orangecolor"></span>当前位置&nbsp;&nbsp;&nbsp;&nbsp;
+                    </p>
+                </div>
+                <div class="startaddress" v-show='showMyLocation'>
+                    {{nowaddress}}
+                </div>
+            </div>
             <div class="pannelTitle">
               附近门店
               <span class="showmapbtn iconfont icon-mn03"  @click="changeMapList" v-show="!showmap"></span>
@@ -19,7 +32,7 @@
             </div>
             <div id="baidumap" v-show="stores&&showmap" :style="{height:scrollerHeight1}"></div>
             <scroller lock-x v-show="stores&&!showmap" :style="{height:scrollerHeight1}" v-ref:scroller>
-                <stores-box :stores="stores"></stores-box v-ref:storesBox>
+                <stores-box :stores="stores" :openit="openit"></stores-box v-ref:storesBox>
             </scroller>
         </div>
     </div>
@@ -68,7 +81,7 @@ export default {
     data() {
         // console.log(this.$log())
         return {
-            stores: [],
+            stores: false,
             orderaddress: '',
             orderInfo: null,
             urlParam: {},
@@ -80,7 +93,7 @@ export default {
             },
             showstore: true,
             showMyLocation: true,
-            scrollerHeight1: window.innerHeight - 82 + 'px',
+            scrollerHeight1: window.innerHeight - 126 + 'px',
             scrollerHeight: window.innerHeight - 44 + 'px',
             showAction: false,
             showmap:false,
@@ -129,6 +142,25 @@ export default {
       console.log('ready');
     },
     methods: {
+        openit:function(_uid){
+          let self=this
+          let index='';
+          this.stores.forEach((store,key)=>{
+            if(store._uid===_uid){
+              index=key;
+            }
+          })
+          if(this.stores[index].promotions.length<=3){
+            return;
+          }
+          this.$set('stores['+index+'].openPromotions',!this.stores[index].openPromotions)
+          // this.$set('stores['+index+']._uid',Math.random())
+          setTimeout(()=>{
+            self.$nextTick(()=>{
+              self.$refs.scroller.reset()
+            })
+          },500)
+        },
         getmaininfo(){
           // console.log('加载门店信息');
           let self=this
@@ -143,7 +175,12 @@ export default {
             .then(stores=>{
               //默认距离设置9999999  storesBox中会直接显示“未获取距离“  并且排序会排在最后面
               // console.log('$$$$',stores);
-              stores.map(store=>store.range=9999999);
+              stores.map(store=>{
+                store.range=9999999
+                store.openPromotions=false;
+                store._uid=Math.random()
+                return store;
+              });
               //存门店信息
               self.stores=stores
               //更新scroller

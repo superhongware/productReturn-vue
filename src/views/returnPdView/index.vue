@@ -57,7 +57,7 @@
             </div>
             <div id="baidumap" v-show="stores&&showmap" :style="{height:scrollerHeight1}"></div>
             <scroller lock-x v-show="stores&&!showmap" :style="{height:scrollerHeight1}" v-ref:scroller>
-                <stores-box :stores="stores"></stores-box v-ref:storesBox>
+                <stores-box :stores="stores" :openit="openit"></stores-box v-ref:storesBox>
             </scroller>
         </div>
 
@@ -115,7 +115,7 @@ export default {
     data() {
         // console.log(this.$log())
         return {
-            stores: [],
+            stores: false,
             orderaddress: '',
             orderInfo: null,
             urlParam: {},
@@ -193,6 +193,25 @@ export default {
       console.log('ready');
     },
     methods: {
+        openit:function(_uid){
+          let self=this
+          let index='';
+          this.stores.forEach((store,key)=>{
+            if(store._uid===_uid){
+              index=key;
+            }
+          })
+          if(this.stores[index].promotions.length<=3){
+            return;
+          }
+          this.$set('stores['+index+'].openPromotions',!this.stores[index].openPromotions)
+          // this.$set('stores['+index+']._uid',Math.random())
+          setTimeout(()=>{
+            self.$nextTick(()=>{
+              self.$refs.scroller.reset()
+            })
+          },500)
+        },
         getmaininfo(){
           // console.log('加载门店信息');
           let self=this
@@ -209,7 +228,11 @@ export default {
               if(!stores){
                 stores=[];
               }
-              stores.map(store=>store.range=9999999);
+              stores.map(store=>{
+                store.range=9999999
+                store._uid=Math.random()
+                return store;
+              });
               //存门店信息
               self.stores=stores
               //更新scroller
