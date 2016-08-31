@@ -32,7 +32,11 @@
 				<button class="weui_btn  mui-btn-disable" style="width:220px" v-if="btnStatus=='2'">来晚了，优惠劵已被抢完</button>
 				<button class="weui_btn  mui-btn-disable" style="width:140px" v-if="btnStatus=='3'">该手机号已领取</button>
 				<button class="weui_btn weui_btn_primary" style="width:115px" @click="prompt" v-if="!btnStatus"> 立即领取 </button>
-				<p>使用条件：满{{couponInfo.useCondition}}{{couponInfo.couponType=='3'&&couponInfo.couponSmaller=='true'?'件':'元'}}可用<br>使用时间：{{couponInfo.lifespan}}<br>使用说明：{{{couponInfo.memo}}}</p>
+				<p>使用条件：
+					<span v-if="couponInfo.couponType=='3'&&couponInfo.couponSmaller==''">{{couponInfo.useCondition}}</span>
+					<span v-if="couponInfo.useCondition&&couponInfo.useCondition!=0&&couponInfo.couponSmaller!=''">满{{couponInfo.useCondition}}{{couponInfo.couponType=='3'&&couponInfo.couponSmaller=='true'?'件':'元'}}可用</span>
+					<span v-if="!couponInfo.useCondition||couponInfo.useCondition==0">全场通用</span>
+					<br>使用时间：{{couponInfo.lifespan}}<br>使用说明：{{{couponInfo.memo}}}</p>
 			</div>
 
 		</div>

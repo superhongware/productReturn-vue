@@ -204,13 +204,18 @@ store.CouponInfoGetdetail = (couponNumber) => {
 
 store.RMCouponReceive = (tel,couponCode) => {
 	return new Promise(function(resolve, reject) {
+		let Coupondata = {
+			orgCode: urlParam.action.orgCode,
+			openID: urlParam.action.openID,
+			appID: urlParam.action.appID || tel
+		};
 		let data = {
 			method: 'V5.mobile.wx.rmCoupon.receive',
 			mobilePhone: tel,
 			couponCode: couponCode
 		}
 		console.log(data)
-		hwGetJsonp(apiurl + 'WXRMCouponReceive', Object.assign(data, Couponjson))
+		hwGetJsonp(apiurl + 'WXRMCouponReceive', Object.assign(data, Coupondata))
 			.then(data => {
 				resolve(data)
 			})
