@@ -143,6 +143,8 @@ export default {
   overflow: hidden;
   position:relative;
   color:#999;
+  white-space:nowrap;
+  text-overflow:ellipsis;
   .ptype{
     width:16px;
     height:16px;
