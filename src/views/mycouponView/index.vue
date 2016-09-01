@@ -71,6 +71,8 @@
 			data: function() {
 				this.loading.show = true
 				var self = this;
+				self.unData=[]
+				self.yeData=[]
 				store.CouponInfoSearch().then(data => {
 					self.loading.show = false
 					console.log(data)
@@ -103,7 +105,7 @@
 				this.$route.router.go({
 					name: 'couponDetail',
 					params: {
-						code: x.couponNumber
+						code: x.couponNumber+"&"+x.mobilePhone
 					}
 				})
 			}

@@ -30,7 +30,7 @@
 				<h1>{{couponInfo.couponName}}</h1>
 				<button class="weui_btn  mui-btn-disable" style="width:140px" v-if="btnStatus=='1'">活动已结束</button>
 				<button class="weui_btn  mui-btn-disable" style="width:220px" v-if="btnStatus=='2'">来晚了，优惠劵已被抢完</button>
-				<button class="weui_btn  mui-btn-disable" style="width:140px" v-if="btnStatus=='3'">该手机号已领取</button>
+				<button class="weui_btn  mui-btn-disable" style="width:145px" v-if="btnStatus=='3'">该手机号已领取</button>
 				<button class="weui_btn weui_btn_primary" style="width:115px" @click="prompt" v-if="!btnStatus"> 立即领取 </button>
 				<p>使用条件：
 					<span v-if="couponInfo.couponType=='3'&&couponInfo.couponSmaller==''">{{couponInfo.useCondition}}</span>
@@ -82,7 +82,8 @@
 				this.btnStatus = data.prompt || ''
 			})
 			store.fetchUrlParma().then(data => {
-				store.CouponInfoGet(data.action.couponId).then(data => {
+				console.log(store.urlParam)
+				store.CouponInfoGet(data.action.couponId,store.urlParam.action.appID==""?"1":"2").then(data => {
 					console.log(data)
 					self.loading.show = false
 					if(!data.isSuccess) {
@@ -120,6 +121,7 @@
 											alert(data.map.errorMsg);
 											return
 										}
+										localStorage.setItem("tel",tel)
 										alert('领取成功，已存入会员卡包');
 										this.$route.router.go({
 											name: 'mycoupon'

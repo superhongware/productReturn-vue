@@ -38,7 +38,7 @@ let topStoryIds = []
 export default store
 
 const orderInfoCache = {}
-
+store.urlParam=urlParam;
 store.fetchUrlParma = () => {
 	return Promise.resolve(urlParam);
 }
@@ -156,10 +156,16 @@ const Couponjson = {
 
 store.CouponInfoSearch = () => {
 	return new Promise(function(resolve, reject) {
+		let Coupondata = {
+			orgCode: urlParam.action.orgCode,
+			openID: urlParam.action.openID,
+			appID: urlParam.action.appID
+		};
+		console.log(Coupondata)
 		let data = {
 			method: 'V5.mobile.wx.coupon.info.search',
 		}
-		hwGetJsonp(apiurl + 'wxCouponInfoSearch', Object.assign(data, Couponjson))
+		hwGetJsonp(apiurl + 'wxCouponInfoSearch', Object.assign(data, Coupondata))
 			.then(data => {
 				resolve(data)
 			})
@@ -167,14 +173,23 @@ store.CouponInfoSearch = () => {
 	});
 }
 
-store.CouponInfoGet = (couponNumber) => {
+store.CouponInfoGet = (couponNumber, c) => {
+	let method = 'V5.mobile.wx.coupon.info.get';
+	let apiName = 'wxCouponInfoGet';
+	console.log(c)
+	if(c == "1") {
+		method = 'V5.mobile.coupon.info.get';
+		apiName = 'couponInfoGet';
+	}
+	
 	return new Promise(function(resolve, reject) {
 		let data = {
-			method: 'V5.mobile.wx.coupon.info.get',
-			couponNumber: couponNumber
+			method: method,
+			couponNumber: couponNumber,
+			operationType: "1"
 		}
 		console.log(Object.assign(data, Couponjson))
-		hwGetJsonp(apiurl + 'wxCouponInfoGet', Object.assign(data, Couponjson))
+		hwGetJsonp(apiurl + apiName, Object.assign(data, Couponjson))
 			.then(data => {
 				resolve(data)
 			})
@@ -182,19 +197,26 @@ store.CouponInfoGet = (couponNumber) => {
 	});
 }
 
-store.CouponInfoGetdetail = (couponNumber) => {
+store.CouponInfoGetdetail = (couponNumber, c) => {
 	return new Promise(function(resolve, reject) {
+		let method = 'V5.mobile.wx.coupon.info.get';
+		let apiName = 'wxCouponInfoGet';
+		if(c == "1") {
+			method = 'V5.mobile.coupon.info.get';
+			apiName = 'couponInfoGet';
+		}
 		let Coupondata = {
 			orgCode: urlParam.action.orgCode,
-			openID: urlParam.action.openID || couponNumber,
-			appID: urlParam.action.appID || couponNumber
+			openID: urlParam.action.openID,
+			appID: urlParam.action.appID || couponNumber.split("&")[1]
 		};
 		let data = {
-			method: 'V5.mobile.wx.coupon.info.get',
-			couponNumber: couponNumber
+			method: method,
+			couponNumber: couponNumber.split("&")[0],
+			operationType: "2"
 		}
 		console.log(Object.assign(data, Coupondata))
-		hwGetJsonp(apiurl + 'wxCouponInfoGet', Object.assign(data, Coupondata))
+		hwGetJsonp(apiurl + apiName, Object.assign(data, Coupondata))
 			.then(data => {
 				resolve(data)
 			})
@@ -202,7 +224,7 @@ store.CouponInfoGetdetail = (couponNumber) => {
 	});
 }
 
-store.RMCouponReceive = (tel,couponCode) => {
+store.RMCouponReceive = (tel, couponCode) => {
 	return new Promise(function(resolve, reject) {
 		let Coupondata = {
 			orgCode: urlParam.action.orgCode,
