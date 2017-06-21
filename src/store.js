@@ -159,7 +159,7 @@ store.CouponInfoSearch = () => {
 		let Coupondata = {
 			orgCode: urlParam.action.orgCode,
 			openID: urlParam.action.openID,
-			appID: urlParam.action.appID
+			appID: urlParam.action.appID||localStorage.getItem("tel")
 		};
 		console.log(Coupondata)
 		let data = {

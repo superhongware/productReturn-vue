@@ -65,7 +65,7 @@
 					name = unescape(params.split(',')[1])
 				} else {
 					code = params;
-					name = Base64.decode(urlParam.action.couponName)
+					name = Base64.decode(urlParam.action.couponName)	
 				}
 				return {
 					code: code,
